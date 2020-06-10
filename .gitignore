@@ -1,0 +1,14 @@
+*.swp
+node_modules/
+dist/
+__pycache__/
+*.db
+env/
+venv/
+.mypy_cache/
+.idea/
+.hypothesis/
+screenshots/
+*.csv#
+.coverage
+test_data/
