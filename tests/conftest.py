@@ -8,4 +8,4 @@ def postgres_creation():
     """disposable postgres database"""
     Podman.start_container(TEST_CONTAINER, POSTGRES, POSTGRES_PORT)
     yield
-    Podman.stop_container(TEST_CONTAINER)
+    Podman.force_rm_container(TEST_CONTAINER)

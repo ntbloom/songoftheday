@@ -29,7 +29,7 @@ class Podman:
         subprocess.run(args, capture_output=True).check_returncode()
 
     @staticmethod
-    def stop_container(ident: str) -> None:
+    def force_rm_container(ident: str) -> None:
         """
         Kills the container
         """

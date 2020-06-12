@@ -12,4 +12,3 @@ TEST_CONTAINER = "pg-test"
 # container images
 POSTGRES = "docker.io/library/postgres"
 POSTGRES_PORT = 5432
-
