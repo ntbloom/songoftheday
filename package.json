@@ -1,5 +1,9 @@
 {
   "scripts": {
-    "mypy": "venv/bin/mypy --config-file mypy.ini src/"
+    "mypy": "venv/bin/mypy --config-file mypy.ini src/",
+    "pytest": "venv/bin/python -m pytest -s"
+  },
+  "devDependencies": {
+    "prettier": "^2.0.5"
   }
 }
