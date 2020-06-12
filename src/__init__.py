@@ -8,6 +8,7 @@ TESTDATADIR = TESTDIR.joinpath("test_data")
 
 # testing variables
 TEST_CONTAINER = "pg-test"
+TEST_DATABASE = "sotd_test"
 
 # container images
 POSTGRES = "docker.io/library/postgres"

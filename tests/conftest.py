@@ -9,3 +9,6 @@ def postgres_creation():
     Podman.start_container(TEST_CONTAINER, POSTGRES, POSTGRES_PORT)
     yield
     Podman.force_rm_container(TEST_CONTAINER)
+
+
+# @pytest.fixture(scope="class")

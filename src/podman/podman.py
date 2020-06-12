@@ -1,5 +1,6 @@
 import subprocess
 from typing import List
+from src import TEST_CONTAINER, POSTGRES, POSTGRES_PORT
 
 
 class Podman:
@@ -43,3 +44,7 @@ class Podman:
         command.check_returncode()
         containers = command.stdout.decode().split("""\n""")
         return containers
+
+
+if __name__ == "__main__":
+    Podman.start_container(TEST_CONTAINER, POSTGRES, POSTGRES_PORT)
