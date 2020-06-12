@@ -11,4 +11,4 @@ venv/
 screenshots/
 *.csv#
 .coverage
-test_data/
+*.csv
