@@ -14,11 +14,11 @@ class PsqlWrapper:
         self.db = db  # -d flag with psql
         self._create_database()
 
-    def execute_query(self, query: str, no_database: Optional[bool] = False) -> str:
+    def execute_query(self, query: str, no_database: Optional[bool] = False) -> bytes:
         """executes a raw SQL query, returns the results as a string"""
-        args = ()
+        # args = ()
         if no_database:
-            args = (
+            args = [
                 "psql",
                 "-t",  # tuples only, returns just the value of the query
                 "-h",
@@ -27,9 +27,9 @@ class PsqlWrapper:
                 "postgres",
                 "-c",
                 query,
-            )
+            ]
         else:
-            args = (
+            args = [
                 "psql",
                 "-t",  # tuples only, returns just the value of the query
                 "-h",
@@ -40,12 +40,12 @@ class PsqlWrapper:
                 self.db,
                 "-c",
                 query,
-            )
+            ]
         command = subprocess.run(args, capture_output=True)
         command.check_returncode()
         return command.stdout
 
-    def _create_database(self) -> str:
+    def _create_database(self) -> bytes:
         """creates a new database, drops the old one if it exists"""
         drop = f"DROP DATABASE IF EXISTS {self.db};"
         self.execute_query(drop, no_database=True)
