@@ -1,6 +1,4 @@
 import pytest
-from src import TEST_DATABASE
-from src.postgres.postgres_connector import PostgresConnector
 import psycopg2
 
 

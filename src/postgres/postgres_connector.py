@@ -34,5 +34,4 @@ class PostgresConnector:
         parametized values.
         """
         self.cursor.execute(query, params)
-        self.commit()
         return self.cursor.fetchall()
