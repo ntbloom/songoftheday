@@ -25,18 +25,11 @@ class TestPostgresConnectorClass:
         with pytest.raises(psycopg2.InterfaceError):
             pg_connector.cursor.execute("""SELECT 1+1;""")
 
-    def test_query_no_parameters(self, pg_connector):
+    def test_rollback(self, pg_connector):
         """
-        Can we pass a simple string as a query
+        Queries can be rolled back successfully
         """
-        actual = pg_connector.query("SELECT 1+1")
-        expected = [(2,)]
-        assert actual == expected
-
-    def test_query_with_params(self, pg_connector):
-        """
-        Can we parametize a query
-        """
-        actual = pg_connector.query("""SELECT 1 + %s""", (1,))
-        expected = [(2,)]
-        assert actual == expected
+        pg_connector.cursor.execute("CREATE TABLE does_not_exist (id INTEGER);")
+        pg_connector.rollback()
+        with pytest.raises(psycopg2.errors.UndefinedTable):
+            pg_connector.cursor.execute("SELECT * from does_not_exist;")

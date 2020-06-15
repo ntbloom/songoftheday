@@ -14,6 +14,12 @@ class PostgresConnector:
         )
         self.cursor: extensions.cursor = self.conn.cursor()
 
+    def rollback(self):
+        """
+        Rolls back a query
+        """
+        self.conn.rollback()
+
     def commit(self):
         """
         Commits a query to the database
@@ -25,13 +31,3 @@ class PostgresConnector:
         Closes connection with the database
         """
         self.conn.close()
-
-    def query(
-        self, query: str, params: Tuple[Any, ...] = None
-    ) -> List[Tuple[Any, ...]]:
-        """
-        Write a query on the database.  Either send a raw string or a tuple for
-        parametized values.
-        """
-        self.cursor.execute(query, params)
-        return self.cursor.fetchall()

@@ -1,7 +1,8 @@
 from src.podman.podman import Podman
 import pytest
-from src import TEST_CONTAINER, POSTGRES, POSTGRES_PORT, TEST_DATABASE
+from src import TEST_CONTAINER, POSTGRES, POSTGRES_PORT, TEST_DATABASE, HOST
 from src.postgres.postgres_connector import PostgresConnector
+from src.datastore.data_populator import DataPopulator
 
 
 @pytest.fixture(scope="session", autouse=False)
@@ -18,3 +19,11 @@ def pg_connector():
     p = PostgresConnector(TEST_DATABASE)
     yield p
     p.close()
+
+
+@pytest.fixture(scope="function")
+def data_populator():
+    """disposable DataPopulator object"""
+    dp = DataPopulator(TEST_DATABASE, HOST)
+    yield dp
+    dp.close()

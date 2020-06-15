@@ -13,3 +13,7 @@ TEST_DATABASE = "sotd_test"
 # container images
 POSTGRES = "docker.io/library/postgres"
 POSTGRES_PORT = 5432
+HOST = "localhost"
+
+# database files
+SCHEMA = SOURCEDIR.joinpath("postgres").joinpath(Path("schema.sql"))

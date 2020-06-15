@@ -17,23 +17,23 @@ CREATE TABLE entries (
   day DATE NOT NULL,
   username TEXT,
   song_name TEXT NOT NULL,
-  song_lexemes TSVECTOR GENERATED ALWAYS AS (to_tsvector('english', song_name),
+  song_lexemes TSVECTOR GENERATED ALWAYS AS (to_tsvector('english', song_name)) STORED,
   artist TEXT NOT NULL,
-  artist_lexemes TSVECTOR GENERATED ALWAYS AS (to_tsvector('english', artist),
+  artist_lexemes TSVECTOR GENERATED ALWAYS AS (to_tsvector('english', artist)) STORED,
   year INTEGER NOT NULL,
   hyperlink TEXT NOT NULL,
   duration INTEGER,
-  entered_at TIMESTAMP_WITH_TIMEZONE NOT NULL,
-  updated_at TIMESTAMP_WITH_TIMEZONE,
-  updated_by TIMESTAMP_WITH_TIMEZONE,
+  entered_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE,
+  updated_by TIMESTAMP WITH TIME ZONE,
   FOREIGN KEY(username) REFERENCES users(username)
 ); 
 
 --index on entries
 DROP INDEX IF EXISTS song_lexemes_idx;
-CREATE INDEX song_lexemes_idx ON songs USING GIN (song_lexemes);
+CREATE INDEX song_lexemes_idx ON entries USING GIN (song_lexemes);
 
 DROP INDEX IF EXISTS artist_lexemes_idx;
-CREATE INDEX artist_lexemes_idx ON songs USING GIN(artist_lexemes);
+CREATE INDEX artist_lexemes_idx ON entries USING GIN(artist_lexemes);
 
 COMMIT;
