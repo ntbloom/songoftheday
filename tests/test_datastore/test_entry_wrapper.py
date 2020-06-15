@@ -1,6 +1,7 @@
 import pytest
 from src.datastore.entry_wrapper import Entry
 import datetime
+import psycopg2
 
 
 @pytest.mark.usefixtures("data_populator")
@@ -16,7 +17,48 @@ class TestEntryWrapper:
         assert actual.song_name == expected.song_name
         assert actual.year == expected.year
         assert actual.hyperlink == expected.hyperlink
-        assert (datetime.datetime.now().second - actual.entered_at.second) < 1
+        assert datetime.datetime.now().second - actual.entered_at.second < 1
         assert actual.duration == expected.duration
         assert actual.updated_at is None
         assert actual.updated_by is None
+
+    def test_get_entry_from_database_bad_entry_id(self, entry_wrapper):
+        """tests that None is returned from bad entry_id"""
+        assert entry_wrapper.get_entry_from_database(9999999) is None
+
+    def test_update_entry(self, entry_wrapper, sample_entry):
+        """tests that an entry can be edited"""
+        entry: Entry = sample_entry
+        entry_id = entry_wrapper.add_entry_to_database(entry)
+        artist = "Prince & The Revolution"
+        updated_by = "Noah"
+        entry_wrapper.update_entry(updated_by, entry_id, artist=artist)
+
+        new_entry = entry_wrapper.get_entry_from_database(entry_id)
+        assert new_entry.artist == artist
+        assert new_entry.song_name == entry.song_name
+        assert new_entry.updated_by == updated_by
+        assert datetime.datetime.now().second - new_entry.updated_at.second < 1
+
+    def test_update_entry_is_safe_bad_column(self, entry_wrapper, sample_entry):
+        """tests that only valid column names can be used"""
+        entry: Entry = sample_entry
+        entry_id = entry_wrapper.add_entry_to_database(entry)
+        with pytest.raises(psycopg2.errors.UndefinedColumn):
+            entry_wrapper.update_entry(
+                "Noah", entry_id, injection="year=2000; DROP TABLE entries;"
+            )
+
+    def test_update_entry_is_safe_general_injection(self, entry_wrapper, sample_entry):
+        """tests against SQL injection"""
+
+        entry: Entry = sample_entry
+        entry_id = entry_wrapper.add_entry_to_database(entry)
+        entry_wrapper.update_entry("Noah", entry_id, artist="new; DROP TABLE entries;")
+        assert entry_wrapper.get_entry_from_database(entry_id) is not None
+
+    def test_update_entry_returns_none_on_bad_entry_id(self, entry_wrapper):
+        """tests that None is returned when entry_id doesn't make a match"""
+        assert (
+            entry_wrapper.update_entry("Noah", 9999999, artist="Someone Else") is None
+        )

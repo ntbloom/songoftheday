@@ -1,6 +1,7 @@
 from typing import NamedTuple, Optional, Union, Dict
 from datetime import date
 from src.postgres.postgres_connector import PostgresConnector
+from psycopg2.extensions import quote_ident
 
 
 class Entry(NamedTuple):
@@ -52,9 +53,10 @@ class EntryWrapper(PostgresConnector):
             ),
         )
         entry_id = self.cursor.fetchone()[0]
+        self.commit()
         return entry_id
 
-    def get_entry_from_database(self, entry_id: int) -> Entry:
+    def get_entry_from_database(self, entry_id: int) -> Optional[Entry]:
         """
         Gets an entry from the database from an entry_id as an Entry object
         """
@@ -78,6 +80,8 @@ class EntryWrapper(PostgresConnector):
             (entry_id,),
         )
         resp = self.cursor.fetchone()
+        if resp is None:
+            return None
         entry = Entry(
             entry_id=resp[0],
             day=resp[1],
@@ -89,13 +93,27 @@ class EntryWrapper(PostgresConnector):
             duration=resp[7],
             entered_at=resp[8],
             updated_at=resp[9],
+            updated_by=resp[10],
         )
         return entry
 
     def update_entry(
         self, updated_by: str, entry_id: int, **kwargs: Dict[str, Union[str, int, date]]
-    ) -> Entry:
+    ) -> Optional[Entry]:
         """
         Edits a given entry according to params named in kwargs
         """
-        pass
+        for k, v in kwargs.items():
+            self.cursor.execute(
+                f"""
+                UPDATE entries
+                SET 
+                    {quote_ident(k,self.cursor)} = %s,
+                    updated_at = now(), 
+                    updated_by = %s
+                WHERE entry_id = %s;
+            """,
+                (v, updated_by, entry_id),
+            )
+            self.commit()
+        return self.get_entry_from_database(entry_id)

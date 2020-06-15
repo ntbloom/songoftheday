@@ -25,9 +25,10 @@ CREATE TABLE entries (
   duration INTEGER,
   entered_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE,
-  updated_by TIMESTAMP WITH TIME ZONE,
-  FOREIGN KEY(username) REFERENCES users(username)
-); 
+  updated_by TEXT,
+  FOREIGN KEY(username) REFERENCES users(username),
+  FOREIGN KEY(updated_by) REFERENCES users(username)
+);
 
 --index on entries
 DROP INDEX IF EXISTS song_lexemes_idx;
