@@ -1,19 +1,19 @@
 from pathlib import Path
 
 # file directories
-HOMEDIR = Path(__file__).parent.parent
-SOURCEDIR = HOMEDIR.joinpath("src")
-TESTDIR = HOMEDIR.joinpath("test")
-TESTDATADIR = TESTDIR.joinpath("test_data")
+HOMEDIR: Path = Path(__file__).parent.parent
+SOURCEDIR: Path = HOMEDIR.joinpath("src")
+TESTDIR: Path = HOMEDIR.joinpath("tests")
+DATADIR: Path = TESTDIR.joinpath("test_data")
 
 # testing variables
-TEST_CONTAINER = "pg-test"
-TEST_DATABASE = "sotd_test"
+TEST_CONTAINER: str = "pg-test"
+TEST_DATABASE: str = "sotd_test"
 
 # container images
-POSTGRES = "docker.io/library/postgres"
-POSTGRES_PORT = 5432
-HOST = "localhost"
+POSTGRES: str = "docker.io/library/postgres"
+POSTGRES_PORT: int = 5432
+HOST: str = "localhost"
 
 # database files
-SCHEMA = SOURCEDIR.joinpath("postgres").joinpath(Path("schema.sql"))
+SCHEMA: Path = SOURCEDIR.joinpath("postgres").joinpath(Path("schema.sql"))
