@@ -16,6 +16,8 @@ class DataPopulator(PostgresConnector):
         self.users = users
         self.entries = entries
         self._create_schema()
+        self._add_users()
+        self._add_entries()
 
     def _create_schema(self) -> None:
         """
@@ -29,8 +31,10 @@ class DataPopulator(PostgresConnector):
                 except psycopg2.ProgrammingError:
                     pass
 
-    def add_users(self) -> None:
-        """adds the users to the database"""
+    def _add_users(self) -> None:
+        """
+        Adds the users to the database
+        """
         with open(self.users) as users:
             reader = csv.reader(users, delimiter=",")
             reader.__next__()
@@ -46,3 +50,27 @@ class DataPopulator(PostgresConnector):
                 """,
                     (line[0], line[1], line[2], line[3]),
                 )
+                self.commit()
+
+    def _add_entries(self) -> None:
+        """
+        Adds entries to the database
+        """
+        with open(self.entries) as entries:
+            reader = csv.reader(entries, delimiter=",")
+            reader.__next__()
+            for line in reader:
+                self.cursor.execute(
+                    """
+                    INSERT INTO entries (
+                         day,
+                         username,
+                         artist,
+                         song_name,
+                         year,
+                         hyperlink
+                     ) VALUES (%s,%s,%s,%s,%s,%s)
+                """,
+                    (line[0], line[1], line[2], line[3], line[4], line[5]),
+                )
+                self.commit()
