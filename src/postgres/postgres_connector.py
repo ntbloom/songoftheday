@@ -5,7 +5,7 @@ from typing import Optional, List, Any, Tuple
 
 class PostgresConnector:
     """
-    Wrapper class for connecting to the postgresql database
+    Wrapper class for connecting to the postgresql database.
     """
 
     def __init__(self, database: str, host: Optional[str] = "localhost"):

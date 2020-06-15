@@ -1,4 +1,5 @@
 from src.podman.podman import Podman
+from src.postgres.psql_wrapper import PsqlWrapper
 import pytest
 from src import (
     TEST_CONTAINER,
@@ -11,6 +12,8 @@ from src import (
 )
 from src.postgres.postgres_connector import PostgresConnector
 from src.datastore.data_populator import DataPopulator
+from src.datastore.entry_wrapper import EntryWrapper, Entry
+from datetime import date
 
 
 @pytest.fixture(scope="session", autouse=False)
@@ -21,7 +24,7 @@ def postgres_creation():
     Podman.force_rm_container(TEST_CONTAINER)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def pg_connector():
     """disposable PostrgresConnector object"""
     p = PostgresConnector(TEST_DATABASE)
@@ -29,9 +32,10 @@ def pg_connector():
     p.close()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def data_populator():
-    """disposable DataPopulator object"""
+    """automatically populate data in the database"""
+    psql = PsqlWrapper(HOST, TEST_DATABASE)  # initialize the database
     dp = DataPopulator(
         TEST_DATABASE,
         HOST,
@@ -41,3 +45,24 @@ def data_populator():
     )
     yield dp
     dp.close()
+
+
+@pytest.fixture()
+def entry_wrapper():
+    """disposable EntryWrapper object"""
+    entry_wrapper = EntryWrapper(TEST_DATABASE, HOST)
+    yield entry_wrapper
+    entry_wrapper.close()
+
+
+@pytest.fixture()
+def sample_entry():
+    """disposable Entry object"""
+    day = date(1999, 12, 31)
+    username = "Noah"
+    artist = "Prince"
+    song_name = "1999"
+    year = 1982
+    hyperlink = "https://www.youtube.com/watch?v=rblt2EtFfC4"
+    entry = Entry(day, username, artist, song_name, year, hyperlink)
+    yield entry
