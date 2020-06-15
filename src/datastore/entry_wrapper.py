@@ -1,4 +1,4 @@
-from typing import NamedTuple, Optional, Union, Dict
+from typing import NamedTuple, Optional, Union, Dict, List
 from datetime import date
 from src.postgres.postgres_connector import PostgresConnector
 from psycopg2.extensions import quote_ident
@@ -117,3 +117,51 @@ class EntryWrapper(PostgresConnector):
             )
             self.commit()
         return self.get_entry_from_database(entry_id)
+
+    def get_all_entries(
+        self, **kwargs: Dict[str, Union[str, int, date]]
+    ) -> Optional[List[Entry]]:
+        """
+        Returns all entries that match param args specified in **kwargs. If no params,
+        return all entries. Returns None if no matches.
+        """
+        where_clause = ""
+        self.cursor.execute(
+            f"""
+            SELECT
+                entry_id,
+                day,
+                username,
+                artist,
+                song_name,
+                year,
+                hyperlink,
+                duration,
+                entered_at,
+                updated_at,
+                updated_by
+            FROM entries
+            {where_clause}
+            """
+        )
+        resp = self.cursor.fetchall()
+        if resp is None:
+            return None
+        else:
+            entries = []
+            for i in resp:
+                entry = Entry(
+                    entry_id=i[0],
+                    day=i[1],
+                    username=i[2],
+                    artist=i[3],
+                    song_name=i[4],
+                    year=i[5],
+                    hyperlink=i[6],
+                    duration=i[7],
+                    entered_at=i[8],
+                    updated_at=i[9],
+                    updated_by=i[10],
+                )
+                entries.append(entry)
+        return entries

@@ -51,7 +51,6 @@ class TestEntryWrapper:
 
     def test_update_entry_is_safe_general_injection(self, entry_wrapper, sample_entry):
         """tests against SQL injection"""
-
         entry: Entry = sample_entry
         entry_id = entry_wrapper.add_entry_to_database(entry)
         entry_wrapper.update_entry("Noah", entry_id, artist="new; DROP TABLE entries;")
@@ -62,3 +61,9 @@ class TestEntryWrapper:
         assert (
             entry_wrapper.update_entry("Noah", 9999999, artist="Someone Else") is None
         )
+
+    def test_get_all_entries_no_params(self, entry_wrapper):
+        """tests that all entries are retrieved"""
+        all_entries = entry_wrapper.get_all_entries()
+        for i in all_entries:
+            assert type(i) is Entry
