@@ -60,45 +60,13 @@ class EntryWrapper(PostgresConnector):
         """
         Gets an entry from the database from an entry_id as an Entry object
         """
-        self.cursor.execute(
-            """
-            SELECT
-                entry_id,
-                day,
-                username,
-                artist,
-                song_name,
-                year,
-                hyperlink,
-                duration,
-                entered_at,
-                updated_at,
-                updated_by
-            FROM entries
-            WHERE entry_id = %s
-        """,
-            (entry_id,),
-        )
-        resp = self.cursor.fetchone()
-        if resp is None:
-            return None
-        entry = Entry(
-            entry_id=resp[0],
-            day=resp[1],
-            username=resp[2],
-            artist=resp[3],
-            song_name=resp[4],
-            year=resp[5],
-            hyperlink=resp[6],
-            duration=resp[7],
-            entered_at=resp[8],
-            updated_at=resp[9],
-            updated_by=resp[10],
-        )
-        return entry
+        entries = self.get_all_entries(entry_id=entry_id)
+        if entries:
+            return entries[0]
+        return None
 
     def update_entry(
-        self, updated_by: str, entry_id: int, **kwargs: Dict[str, Union[str, int, date]]
+        self, updated_by: str, entry_id: int, **kwargs: Union[str, int, date]
     ) -> Optional[Entry]:
         """
         Edits a given entry according to params named in kwargs
@@ -118,9 +86,7 @@ class EntryWrapper(PostgresConnector):
             self.commit()
         return self.get_entry_from_database(entry_id)
 
-    def get_all_entries(
-        self, **kwargs: Dict[str, Union[str, int, date]]
-    ) -> Optional[List[Entry]]:
+    def get_all_entries(self, **kwargs: Union[str, int, date]) -> Optional[List[Entry]]:
         """
         Returns all entries that match param args specified in **kwargs. If no params,
         return all entries. Returns None if no matches.
