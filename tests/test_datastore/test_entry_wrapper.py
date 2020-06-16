@@ -67,3 +67,14 @@ class TestEntryWrapper:
         all_entries = entry_wrapper.get_all_entries()
         for i in all_entries:
             assert type(i) is Entry
+
+    def test_get_all_entries_username_param(self, entry_wrapper):
+        """tests that you can search by a username"""
+        username = "Noah"
+        entries_by_noah = entry_wrapper.get_all_entries(username=username)
+        for entry in entries_by_noah:
+            assert entry.username == username
+
+    def test_get_all_entries_returns_none_on_bad_query(self, entry_wrapper):
+        """tests that None is returned when no matches are made"""
+        assert entry_wrapper.get_all_entries(username="Gollum") is None

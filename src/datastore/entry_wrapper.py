@@ -126,6 +126,16 @@ class EntryWrapper(PostgresConnector):
         return all entries. Returns None if no matches.
         """
         where_clause = ""
+        values = []
+        if kwargs:
+            item = kwargs.popitem()
+            values.append(item[1])
+            where_clause = f"WHERE {quote_ident(item[0], self.cursor)} = %s"
+            while len(kwargs) != 0:
+                item = kwargs.popitem()
+                values.append(item[1])
+                where_clause += f" AND {quote_ident(item[0], self.cursor)} = %s"
+        params = tuple(values)
         self.cursor.execute(
             f"""
             SELECT
@@ -142,10 +152,11 @@ class EntryWrapper(PostgresConnector):
                 updated_by
             FROM entries
             {where_clause}
-            """
+            """,
+            params,
         )
         resp = self.cursor.fetchall()
-        if resp is None:
+        if len(resp) == 0:
             return None
         else:
             entries = []
