@@ -78,3 +78,14 @@ class TestEntryWrapper:
     def test_get_all_entries_returns_none_on_bad_query(self, entry_wrapper):
         """tests that None is returned when no matches are made"""
         assert entry_wrapper.get_all_entries(username="Gollum") is None
+
+    def test_get_all_entries_two_params(self, entry_wrapper):
+        """tests that more than 1 param can be used"""
+        username = "Noah"
+        year = 1972
+        entries_by_noah_in_1972 = entry_wrapper.get_all_entries(
+            username=username, year=year
+        )
+        for entry in entries_by_noah_in_1972:
+            assert entry.username == username
+            assert entry.year == year
