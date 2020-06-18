@@ -6,7 +6,7 @@ from typing import Optional
 
 class PsqlWrapper:
     """
-    PostgresConnector class is used to interact with a postgres database running a docker/podman container
+    PostgresConnector class is used to interact with a postgres database running a docker/test_podman container
     """
 
     def __init__(self, host: str, database: str):
