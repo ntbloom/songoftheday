@@ -99,8 +99,11 @@ class EntryWrapper(PostgresConnector):
         wheres = []
         if kwargs:
             for k, v in kwargs.items():
-                wheres.append(k)
-                values.append(v)
+                if fuzzy:
+                    pass
+                else:
+                    wheres.append(quote_ident(k, self.cursor))
+                    values.append(v)
             where_clause = f" WHERE {wheres[0]} = %s"
         if len(wheres) > 1:
             for condition in wheres:
