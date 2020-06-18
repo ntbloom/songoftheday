@@ -86,21 +86,26 @@ class EntryWrapper(PostgresConnector):
             self.commit()
         return self.get_entry_from_database(entry_id)
 
-    def get_all_entries(self, **kwargs: Union[str, int, date]) -> Optional[List[Entry]]:
+    def get_all_entries(
+        self, fuzzy: Optional[bool] = False, **kwargs: Union[str, int, date]
+    ) -> Optional[List[Entry]]:
         """
         Returns all entries that match param args specified in **kwargs. If no params,
-        return all entries. Returns None if no matches.
+        return all entries. Returns None if no matches. If fuzzy, search song_lexemes
+        and artist_lexemes instead of song_name and artist.
         """
         where_clause = ""
         values = []
+        wheres = []
         if kwargs:
-            item = kwargs.popitem()
-            values.append(item[1])
-            where_clause = f"WHERE {quote_ident(item[0], self.cursor)} = %s"
-            while len(kwargs) != 0:
-                item = kwargs.popitem()
-                values.append(item[1])
-                where_clause += f" AND {quote_ident(item[0], self.cursor)} = %s"
+            for k, v in kwargs.items():
+                wheres.append(k)
+                values.append(v)
+            where_clause = f" WHERE {wheres[0]} = %s"
+        if len(wheres) > 1:
+            for condition in wheres:
+                if wheres.index(condition) > 0:
+                    where_clause += f" AND {condition} = %s"
         params = tuple(values)
         self.cursor.execute(
             f"""

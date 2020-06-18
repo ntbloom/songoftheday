@@ -2,6 +2,7 @@ from src.postgres.postgres_connector import PostgresConnector
 from pathlib import Path
 import psycopg2
 import csv
+from src import HOST, TEST_DATABASE, SCHEMA, DATADIR
 
 
 class DataPopulator(PostgresConnector):
@@ -74,3 +75,13 @@ class DataPopulator(PostgresConnector):
                     (line[0], line[1], line[2], line[3], line[4], line[5]),
                 )
                 self.commit()
+
+
+if __name__ == "__main__":
+    dp = DataPopulator(
+        TEST_DATABASE,
+        HOST,
+        SCHEMA,
+        DATADIR.joinpath("users.csv"),
+        DATADIR.joinpath("entries.csv"),
+    )

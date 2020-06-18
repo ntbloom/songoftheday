@@ -89,3 +89,13 @@ class TestEntryWrapper:
         for entry in entries_by_noah_in_1972:
             assert entry.username == username
             assert entry.year == year
+
+    def test_get_all_entries_artist_perfect_match(self, entry_wrapper, sample_entry):
+        """
+        tests that you can search song_lexemes for matches where there is a perfect
+        match
+        """
+        entry_wrapper.add_entry_to_database(sample_entry)
+        entries = entry_wrapper.get_all_entries(song_name=sample_entry.song_name)
+        for entry in entries:
+            assert entry.song_name == sample_entry.song_name
