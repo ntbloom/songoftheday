@@ -91,11 +91,27 @@ class TestEntryWrapper:
             assert entry.year == year
 
     def test_get_all_entries_artist_perfect_match(self, entry_wrapper, sample_entry):
-        """
-        tests that you can search song_lexemes for matches where there is a perfect
-        match
-        """
+        """tests that you can search song_name when not using fuzzy search"""
         entry_wrapper.add_entry_to_database(sample_entry)
         entries = entry_wrapper.get_all_entries(song_name=sample_entry.song_name)
         for entry in entries:
             assert entry.song_name == sample_entry.song_name
+
+    def test_get_all_entries_artist_does_not_fuzzy_search(
+        self, entry_wrapper, sample_entry
+    ):
+        """tests failure to make match on fuzzy query when fuzzy is false"""
+        entry_wrapper.add_entry_to_database(sample_entry)
+        new_song_name = sample_entry.song_name + " XXXXXXXX"
+        entries = entry_wrapper.get_all_entries(song_name=new_song_name)
+        assert entries is None
+
+    def test_get_all_entries_artist_works_fuzzy_search(
+        self, entry_wrapper, sample_entry
+    ):
+        """tests making match on fuzzy query when fuzzy is true"""
+        entry_wrapper.add_entry_to_database(sample_entry)
+        new_song_name = sample_entry.song_name + " XXXXXXXXXXXX"
+        entries = entry_wrapper.get_all_entries(fuzzy=True, song_name=new_song_name)
+        for i in entries:
+            assert i.song_name == sample_entry.song_name

@@ -99,16 +99,18 @@ class EntryWrapper(PostgresConnector):
         wheres = []
         if kwargs:
             for k, v in kwargs.items():
-                if fuzzy:
-                    pass
+                if fuzzy and k == "song_name":
+                    wheres.append(
+                        f"""{k} @@ to_tsquery('english', regexp_replace(%s, '\s',' | '))"""
+                    )
                 else:
-                    wheres.append(quote_ident(k, self.cursor))
-                    values.append(v)
-            where_clause = f" WHERE {wheres[0]} = %s"
+                    wheres.append(f"{quote_ident(k, self.cursor)} = %s")
+                values.append(v)
+            where_clause = f" WHERE {wheres[0]}"
         if len(wheres) > 1:
             for condition in wheres:
                 if wheres.index(condition) > 0:
-                    where_clause += f" AND {condition} = %s"
+                    where_clause += f" AND {condition}"
         params = tuple(values)
         self.cursor.execute(
             f"""
