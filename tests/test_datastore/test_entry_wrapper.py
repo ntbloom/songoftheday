@@ -132,3 +132,10 @@ class TestEntryWrapper:
         entries = entry_wrapper.get_all_entries(fuzzy=True, artist=new_artist)
         for i in entries:
             assert i.artist == sample_entry.artist
+
+    def test_delete_entry_works(self, entry_wrapper, sample_entry):
+        """tests deleting an entry"""
+        entry_id = entry_wrapper.add_entry_to_database(sample_entry)
+        assert entry_wrapper.get_all_entries(entry_id=entry_id) is not None
+        entry_wrapper.delete_entry(entry_id)
+        assert entry_wrapper.get_all_entries(entry_id=entry_id) is None

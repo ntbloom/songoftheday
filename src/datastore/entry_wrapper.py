@@ -155,3 +155,15 @@ class EntryWrapper(PostgresConnector):
                 )
                 entries.append(entry)
         return entries
+
+    def delete_entry(self, entry_id: int) -> None:
+        """deletes the entry that matches an entry_id"""
+        self.cursor.execute(
+            """
+            DELETE 
+            FROM entries
+            WHERE entry_id = %s
+        """,
+            (entry_id,),
+        )
+        self.commit()
