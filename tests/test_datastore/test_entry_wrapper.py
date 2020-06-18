@@ -97,21 +97,38 @@ class TestEntryWrapper:
         for entry in entries:
             assert entry.song_name == sample_entry.song_name
 
-    def test_get_all_entries_artist_does_not_fuzzy_search(
+    def test_get_all_entries_song_name_does_not_work_fuzzy_search(
         self, entry_wrapper, sample_entry
     ):
-        """tests failure to make match on fuzzy query when fuzzy is false"""
+        """tests failure to make match on fuzzy song_name query when fuzzy is false"""
         entry_wrapper.add_entry_to_database(sample_entry)
         new_song_name = sample_entry.song_name + " XXXXXXXX"
         entries = entry_wrapper.get_all_entries(song_name=new_song_name)
         assert entries is None
 
-    def test_get_all_entries_artist_works_fuzzy_search(
+    def test_get_all_entries_song_name_works_fuzzy_search(
         self, entry_wrapper, sample_entry
     ):
-        """tests making match on fuzzy query when fuzzy is true"""
+        """tests making match on fuzzy song_name query when fuzzy is true"""
         entry_wrapper.add_entry_to_database(sample_entry)
         new_song_name = sample_entry.song_name + " XXXXXXXXXXXX"
         entries = entry_wrapper.get_all_entries(fuzzy=True, song_name=new_song_name)
         for i in entries:
             assert i.song_name == sample_entry.song_name
+
+    def test_get_all_entries_song_name_does_not_work_fuzzy_search(
+        self, entry_wrapper, sample_entry
+    ):
+        """tests failure to make match on fuzzy artist query when fuzzy is false"""
+        entry_wrapper.add_entry_to_database(sample_entry)
+        new_artist = sample_entry.artist + " XXXXXXX"
+        entries = entry_wrapper.get_all_entries(artist=new_artist)
+        assert entries is None
+
+    def test_get_all_entries_works_fuzzy_search(self, entry_wrapper, sample_entry):
+        """tests making match on fuzzy artist query when fuzzy is true"""
+        entry_wrapper.add_entry_to_database(sample_entry)
+        new_artist = sample_entry.artist + " XXXXXXX"
+        entries = entry_wrapper.get_all_entries(fuzzy=True, artist=new_artist)
+        for i in entries:
+            assert i.artist == sample_entry.artist
