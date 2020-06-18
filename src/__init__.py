@@ -4,7 +4,7 @@ from pathlib import Path
 HOMEDIR: Path = Path(__file__).parent.parent
 SOURCEDIR: Path = HOMEDIR.joinpath("src")
 TESTDIR: Path = HOMEDIR.joinpath("tests")
-DATADIR: Path = TESTDIR.joinpath("test_data")
+DATADIR: Path = TESTDIR.joinpath("utils").joinpath("test_data")
 
 # testing variables
 TEST_CONTAINER: str = "pg-test"
