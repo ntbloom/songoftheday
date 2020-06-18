@@ -101,6 +101,7 @@ class EntryWrapper(PostgresConnector):
             for k, v in kwargs.items():
                 if fuzzy and (k == "song_name" or k == "artist"):
                     wheres.append(
+                        # fuzzy search query. Likely needs tweaking and/or a custom dict
                         f"""
                         {k} @@ to_tsquery('english', regexp_replace(%s, '\s+',' | '))
                         """
