@@ -116,7 +116,7 @@ class TestEntryWrapper:
         for i in entries:
             assert i.song_name == sample_entry.song_name
 
-    def test_get_all_entries_song_name_does_not_work_fuzzy_search(
+    def test_get_all_entries_artist_name_does_not_work_fuzzy_search(
         self, entry_wrapper, sample_entry
     ):
         """tests failure to make match on fuzzy artist query when fuzzy is false"""
