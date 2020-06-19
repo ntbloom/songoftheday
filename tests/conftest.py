@@ -17,8 +17,9 @@ from src.postgres.postgres_connector import PostgresConnector
 from src.datastore.data_populator import DataPopulator
 from src.datastore.entry_wrapper import EntryWrapper, Entry
 from datetime import date
-import subprocess
 import requests
+import subprocess
+import os
 
 
 @pytest.fixture(scope="session", autouse=False)
@@ -52,6 +53,20 @@ def data_populator():
     dp.close()
 
 
+@pytest.fixture(scope="class")
+def load_data_once():
+    """populate data in the database once per class"""
+    psql = PsqlWrapper(HOST, TEST_DATABASE)  # initialize the database
+    dp = DataPopulator(
+        TEST_DATABASE,
+        HOST,
+        SCHEMA,
+        DATADIR.joinpath("users.csv"),
+        DATADIR.joinpath("entries.csv"),
+    )
+    dp.close()
+
+
 @pytest.fixture()
 def entry_wrapper():
     """disposable EntryWrapper object"""
@@ -73,16 +88,13 @@ def sample_entry():
     yield entry
 
 
-def run_python():
-    """"""
-    subprocess.run([PYTHON, APP])
-
-
 @pytest.fixture(scope="class")
 def flask_dev_server():
     """starts a flask development server, shuts it down after tests"""
-    server = subprocess.Popen([PYTHON, APP])
+    os.environ["FLASK_ENV"] = "testing"
+    server = subprocess.Popen([PYTHON, APP], stdout=subprocess.DEVNULL)
     pid = server.pid
+
     # wait for server to load before yielding
     loading = True
     while loading:
@@ -92,4 +104,5 @@ def flask_dev_server():
         except requests.exceptions.ConnectionError:
             pass
     yield
-    subprocess.run(["kill", "-9", str(pid)]).check_returncode()
+    kill = subprocess.run(["kill", "-9", str(pid)])
+    kill.check_returncode()
