@@ -1,16 +1,18 @@
 from flask import Flask, request, make_response, jsonify
+from src import TEST_FLASK_PORT
 
 app = Flask(__name__)
 
 
-@app.route("/", methods=["GET"])
-def create_entry():
+@app.route("/hello/", methods=["GET"])
+def hello_world():
     """
-    Create an entry in the database. Returns entry_id as an int
+    Can I connect to the database
     """
-    pass
+    return "Hello, world"
 
 
+@app.route("/get-entries/", methods=["GET"])
 def get_entries():
     """
     Query the API using database columns as params. Return data as JSON
@@ -18,16 +20,10 @@ def get_entries():
     pass
 
 
-def update_entry():
+@app.route("/get-all-entries/", methods=["GET"])
+def get_all_entries():
     """
-    Update an entry in the database using the entry_id as the identifier
-    """
-    pass
-
-
-def delete_entry():
-    """
-    Delete an entry based on its entry_id
+    Get a JSON blob of all entries in the database
     """
     pass
 
@@ -45,4 +41,5 @@ def not_found():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+    app.config["TESTING"] = True
+    app.run(port=TEST_FLASK_PORT, debug=True, use_reloader=False)

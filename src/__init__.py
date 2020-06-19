@@ -1,4 +1,5 @@
 from pathlib import Path
+from os.path import abspath
 
 # file directories
 HOMEDIR: Path = Path(__file__).parent.parent
@@ -9,6 +10,12 @@ DATADIR: Path = TESTDIR.joinpath("utils").joinpath("test_data")
 # testing variables
 TEST_CONTAINER: str = "pg-test"
 TEST_DATABASE: str = "sotd_test"
+TEST_FLASK_PORT: str = 5000
+TEST_FLASK_URL: str = f"http://127.0.0.1:{str(TEST_FLASK_PORT)}"
+
+# Python environment variables for running Flask dev server from subprocess module
+APP = abspath(HOMEDIR.joinpath("app.py"))
+PYTHON = abspath(HOMEDIR.joinpath("venv").joinpath("bin").joinpath("python"))
 
 # container images
 POSTGRES: str = "docker.io/library/postgres"

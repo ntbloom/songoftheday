@@ -9,11 +9,16 @@ from src import (
     HOST,
     DATADIR,
     SCHEMA,
+    PYTHON,
+    APP,
+    TEST_FLASK_URL,
 )
 from src.postgres.postgres_connector import PostgresConnector
 from src.datastore.data_populator import DataPopulator
 from src.datastore.entry_wrapper import EntryWrapper, Entry
 from datetime import date
+import subprocess
+import requests
 
 
 @pytest.fixture(scope="session", autouse=False)
@@ -66,3 +71,25 @@ def sample_entry():
     hyperlink = "https://www.youtube.com/watch?v=rblt2EtFfC4"
     entry = Entry(day, username, artist, song_name, year, hyperlink)
     yield entry
+
+
+def run_python():
+    """"""
+    subprocess.run([PYTHON, APP])
+
+
+@pytest.fixture(scope="class")
+def flask_dev_server():
+    """starts a flask development server, shuts it down after tests"""
+    server = subprocess.Popen([PYTHON, APP])
+    pid = server.pid
+    # wait for server to load before yielding
+    loading = True
+    while loading:
+        try:
+            assert requests.get(f"{TEST_FLASK_URL}/hello/").status_code == 200
+            loading = False
+        except requests.exceptions.ConnectionError:
+            pass
+    yield
+    subprocess.run(["kill", "-9", str(pid)]).check_returncode()
