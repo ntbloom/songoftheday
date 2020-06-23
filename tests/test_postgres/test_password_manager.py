@@ -33,14 +33,14 @@ class TestPasswordManager:
         with pytest.raises(PermissionError):
             password_manager.change_password(username, old_pass, new_pass)
 
-    # def test_change_password_good_password(self, password_manager):
-    #     """tests that you can change a password when the correct password is provided"""
-    #     username = "N Bomb"
-    #     old_pw = get_plaintext_password(username)
-    #     assert password_manager.authenticate(username, old_pw) is True
-    #
-    #     new_pw = "password1234"
-    #     password_manager.change_password(username, old_pw, new_pw)
-    #
-    #     assert password_manager.authenticate(username, old_pw) is False
-    #     assert password_manager.authenticate(username, new_pw) is True
+    def test_change_password_good_password(self, password_manager):
+        """tests that you can change a password when the correct password is provided"""
+        username = "N Bomb"
+        old_pw = get_plaintext_password(username)
+        assert password_manager.authenticate(username, old_pw) is True
+
+        new_pw = "password1234"
+        password_manager.change_password(username, old_pw, new_pw)
+
+        assert password_manager.authenticate(username, old_pw) is False
+        assert password_manager.authenticate(username, new_pw) is True
