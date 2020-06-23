@@ -14,6 +14,17 @@ class PostgresConnector:
         )
         self.cursor: extensions.cursor = self.conn.cursor()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Automatically rollback any uncommitted transactions and close the connection
+        when leaving
+        """
+        self.rollback()
+        self.close()
+
     def rollback(self):
         """
         Rolls back a query

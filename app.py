@@ -35,35 +35,33 @@ def get_entries():
     """
     Query the API using database columns as params. Return data as JSON
     """
-    entry_wrapper = EntryWrapper(postgres.database, postgres.host)
-    args: dict = request.args.to_dict()
-    fuzzy = args.pop("fuzzy", False)
-    try:
-        entries = entry_wrapper.get_all_entries(fuzzy, **args)
-        if not entries:
-            # TODO: consider different HTTP code here. 404?
-            return make_response(jsonify({"error": "no results"}), 204)
-        results = []
-        for entry in entries:
-            results.append(
-                {
-                    "day": entry.day,
-                    "username": entry.username,
-                    "artist": entry.artist,
-                    "song_name": entry.song_name,
-                    "year": entry.year,
-                    "hyperlink": entry.hyperlink,
-                    "entered_at": entry.entered_at,
-                    "entry_id": entry.entry_id,
-                    "duration": entry.duration,
-                    "updated_at": entry.updated_at,
-                    "updated_by": entry.updated_by,
-                }
-            )
-        entry_wrapper.close()
-        return jsonify(results)
-    except UndefinedColumn:
-        return make_response(jsonify({"error": "illegal query params"}), 400)
+    with EntryWrapper(postgres.database, postgres.host) as entry_wrapper:
+        args: dict = request.args.to_dict()
+        fuzzy = args.pop("fuzzy", False)
+        try:
+            entries = entry_wrapper.get_all_entries(fuzzy, **args)
+            if not entries:
+                return make_response(jsonify({"error": "no results"}), 204)
+            results = []
+            for entry in entries:
+                results.append(
+                    {
+                        "day": entry.day,
+                        "username": entry.username,
+                        "artist": entry.artist,
+                        "song_name": entry.song_name,
+                        "year": entry.year,
+                        "hyperlink": entry.hyperlink,
+                        "entered_at": entry.entered_at,
+                        "entry_id": entry.entry_id,
+                        "duration": entry.duration,
+                        "updated_at": entry.updated_at,
+                        "updated_by": entry.updated_by,
+                    }
+                )
+            return make_response(jsonify(results), 200)
+        except UndefinedColumn:
+            return make_response(jsonify({"error": "illegal query params"}), 400)
 
 
 @app.errorhandler(500)
