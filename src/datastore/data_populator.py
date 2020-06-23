@@ -46,10 +46,12 @@ class DataPopulator(PostgresConnector):
                         username, 
                         has_administrator_access, 
                         email, 
-                        day_of_week
-                    ) VALUES (%s, %s, %s, %s)
+                        day_of_week,
+                        salt,
+                        password
+                    ) VALUES (%s, %s, %s, %s, %s, %s)
                 """,
-                    (line[0], line[1], line[2], line[3]),
+                    (line[0], line[1], line[2], line[3], line[4], line[5]),
                 )
                 self.commit()
 
