@@ -11,7 +11,8 @@ DATADIR: Path = TESTDIR.joinpath("utils").joinpath("test_data")
 TEST_CONTAINER: str = "pg-test"
 TEST_DATABASE: str = "sotd_test"
 TEST_FLASK_PORT: int = 5000
-TEST_FLASK_URL: str = f"http://127.0.0.1:{str(TEST_FLASK_PORT)}"
+FLASK_API_VERSION: str = "1.0"
+TEST_FLASK_URL: str = f"http://127.0.0.1:{str(TEST_FLASK_PORT)}/v{FLASK_API_VERSION}"
 
 # Python environment variables for running Flask dev server from subprocess module
 APP = abspath(HOMEDIR.joinpath("app.py"))

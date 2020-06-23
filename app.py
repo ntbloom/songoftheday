@@ -22,7 +22,7 @@ postgres = (
 )
 
 
-@app.route("/hello/", methods=["GET"])
+@app.route("/v1.0/hello/", methods=["GET"])
 def hello_world():
     """
     Can I connect to the database
@@ -30,7 +30,7 @@ def hello_world():
     return "Hello, world"
 
 
-@app.route("/get-entries/", methods=["GET"])
+@app.route("/v1.0/get-entries/", methods=["GET"])
 def get_entries():
     """
     Query the API using database columns as params. Return data as JSON
