@@ -1,5 +1,6 @@
 from src.postgres.postgres_connector import PostgresConnector
 from argon2 import argon2_hash
+from secrets import token_urlsafe
 
 
 class PasswordManager(PostgresConnector):
@@ -8,12 +9,17 @@ class PasswordManager(PostgresConnector):
 
     @staticmethod
     def hash(pw: str, salt: str) -> str:
+        """
+        Hash the password with salt using argon2 hashing algorithm
+        """
         return str(argon2_hash(pw, salt))
 
     def change_password(self, username: str, old_pw: str, new_pw: str) -> None:
         """
         Changes the user password
         """
+        if not self.authenticate(username, old_pw):
+            raise PermissionError("invalid password")
         pass
 
     def authenticate(self, username: str, plaintext_password: str) -> bool:
