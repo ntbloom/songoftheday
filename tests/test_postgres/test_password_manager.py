@@ -17,13 +17,14 @@ class TestPasswordManager:
         """tests that a proper password authenticates the user"""
         username = "N Bomb"
         pw = get_plaintext_password(username)
-        assert password_manager.authenticate(username, pw) is True
+        assert password_manager.authenticate(username, pw) > -1
 
     def test_authenticate_works_false(self, password_manager):
         """tests that a bad password is rejected"""
         username = "N Bomb"
         pw = get_plaintext_password(username) + " "
-        assert password_manager.authenticate(username, pw) is False
+        with pytest.raises(PermissionError):
+            password_manager.authenticate(username, pw)
 
     def test_change_password_bad_initial_password(self, password_manager):
         """tests that you get a permission error on a bad old_password"""
@@ -37,10 +38,11 @@ class TestPasswordManager:
         """tests that you can change a password when the correct password is provided"""
         username = "N Bomb"
         old_pw = get_plaintext_password(username)
-        assert password_manager.authenticate(username, old_pw) is True
+        assert password_manager.authenticate(username, old_pw) > -1
 
         new_pw = "password1234"
         password_manager.change_password(username, old_pw, new_pw)
 
-        assert password_manager.authenticate(username, old_pw) is False
-        assert password_manager.authenticate(username, new_pw) is True
+        with pytest.raises(PermissionError):
+            password_manager.authenticate(username, old_pw)
+        assert password_manager.authenticate(username, new_pw) > -1
