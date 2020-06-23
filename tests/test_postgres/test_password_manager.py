@@ -13,9 +13,18 @@ class TestPasswordManager:
 
         assert raw_password + salt != encrypted_password
 
-    @pytest.mark.skip("not implemented yet")
-    def test_authenticate_working(self, password_manager):
+    def test_authenticate_works_true(self, password_manager):
         """tests that a proper password authenticates the user"""
         username = "N Bomb"
         pw = get_plaintext_password(username)
         assert password_manager.authenticate(username, pw) is True
+
+    def test_authenticate_works_false(self, password_manager):
+        """tests that a bad password is rejected"""
+        username = "N Bomb"
+        pw = get_plaintext_password(username) + " "
+        assert password_manager.authenticate(username, pw) is False
+
+    def test_change_password_good_password(self, password_manager):
+        """tests that you can change a password when the correct password is provided"""
+        pass

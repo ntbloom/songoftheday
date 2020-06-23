@@ -31,4 +31,4 @@ HOST: str = "localhost"
 SCHEMA: Path = SOURCEDIR.joinpath("postgres").joinpath(Path("schema.sql"))
 
 # authentication variables
-SALT_LENGTH: int = 16
+SALT_LENGTH: int = 8
