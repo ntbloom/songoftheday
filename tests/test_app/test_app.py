@@ -43,11 +43,18 @@ class TestApp:
     @pytest.mark.parametrize(
         "args,expected_song_name,expected_len,expected_status_code",
         [
+            # basic song
             ("?year=1906", "Bella Ciao", 1, 200),
-            ("?fuzzy=True&song_name=Ciao", "Bella Ciao", 1, 200),
-            ("?fuzzy=False&song_name=Ciao", None, 0, 204),
-            ("?song_name=Ciao", None, 0, 204),
+            # more than 1 param
             ("?year=1970&username=Dr. Q", "Sixty Years On", 1, 200),
+            # fuzzy tests match
+            ("?fuzzy=True&song_name=Ciao", "Bella Ciao", 1, 200),
+            # fuzzy=False disables fuzzy
+            ("?fuzzy=False&song_name=Ciao", None, 0, 204),
+            # omiting fuzzy doesn't find fuzzy match
+            ("?song_name=Ciao", None, 0, 204),
+            # nonexistent column names return 404
+            ("?song_name=Bella Ciao&foo=bar", None, 0, 400),
         ],
     )
     def test_get_entries_with_multiple_params(

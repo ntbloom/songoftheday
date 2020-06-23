@@ -3,6 +3,7 @@ from src import TEST_FLASK_PORT
 from src.datastore.entry_wrapper import EntryWrapper
 from typing import NamedTuple
 from tests.conftest import TEST_DATABASE, HOST
+from psycopg2.errors import UndefinedColumn
 
 app = Flask(__name__)
 
@@ -37,28 +38,32 @@ def get_entries():
     entry_wrapper = EntryWrapper(postgres.database, postgres.host)
     args: dict = request.args.to_dict()
     fuzzy = args.pop("fuzzy", False)
-    entries = entry_wrapper.get_all_entries(fuzzy, **args)
-    if not entries:
-        return "no results", 204
-    results = []
-    for entry in entries:
-        results.append(
-            {
-                "day": entry.day,
-                "username": entry.username,
-                "artist": entry.artist,
-                "song_name": entry.song_name,
-                "year": entry.year,
-                "hyperlink": entry.hyperlink,
-                "entered_at": entry.entered_at,
-                "entry_id": entry.entry_id,
-                "duration": entry.duration,
-                "updated_at": entry.updated_at,
-                "updated_by": entry.updated_by,
-            }
-        )
-    entry_wrapper.close()
-    return jsonify(results)
+    try:
+        entries = entry_wrapper.get_all_entries(fuzzy, **args)
+        if not entries:
+            # TODO: consider different HTTP code here. 404?
+            return make_response(jsonify({"error": "no results"}), 204)
+        results = []
+        for entry in entries:
+            results.append(
+                {
+                    "day": entry.day,
+                    "username": entry.username,
+                    "artist": entry.artist,
+                    "song_name": entry.song_name,
+                    "year": entry.year,
+                    "hyperlink": entry.hyperlink,
+                    "entered_at": entry.entered_at,
+                    "entry_id": entry.entry_id,
+                    "duration": entry.duration,
+                    "updated_at": entry.updated_at,
+                    "updated_by": entry.updated_by,
+                }
+            )
+        entry_wrapper.close()
+        return jsonify(results)
+    except UndefinedColumn:
+        return make_response(jsonify({"error": "illegal query params"}), 400)
 
 
 @app.errorhandler(500)
