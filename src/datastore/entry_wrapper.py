@@ -97,6 +97,7 @@ class EntryWrapper(PostgresConnector):
         where_clause = ""
         values = []
         wheres = []
+        fuzzy = True if fuzzy == "True" or fuzzy is True else False
         if kwargs:
             for k, v in kwargs.items():
                 if fuzzy and (k == "song_name" or k == "artist"):

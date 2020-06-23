@@ -35,7 +35,11 @@ def get_entries():
     Query the API using database columns as params. Return data as JSON
     """
     entry_wrapper = EntryWrapper(postgres.database, postgres.host)
-    entries = entry_wrapper.get_all_entries(**request.args)
+    args: dict = request.args.to_dict()
+    fuzzy = args.pop("fuzzy", False)
+    entries = entry_wrapper.get_all_entries(fuzzy, **args)
+    if not entries:
+        return "no results", 204
     results = []
     for entry in entries:
         results.append(
@@ -53,6 +57,7 @@ def get_entries():
                 "updated_by": entry.updated_by,
             }
         )
+    entry_wrapper.close()
     return jsonify(results)
 
 

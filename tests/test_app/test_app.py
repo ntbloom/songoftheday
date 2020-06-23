@@ -34,15 +34,33 @@ class TestApp:
         )
         assert expected_length == len(payload) + 1
 
-    def test_get_entries_with_single_param_year(self):
-        """tests get-entries/ with year search params"""
-        url = f"{TEST_FLASK_URL}/get-entries/?year=1906"
+    def test_get_entries_no_results(self):
+        """tests 204 response: No Content when no matches"""
+        url = f"{TEST_FLASK_URL}/get-entries/?year=999999"
         r = requests.get(url)
-        assert r.status_code == 200
+        assert r.status_code == 204
 
-        payload = r.json()
-        assert payload[0]["song_name"] == "Bella Ciao"
+    @pytest.mark.parametrize(
+        "args,expected_song_name,expected_len,expected_status_code",
+        [
+            ("?year=1906", "Bella Ciao", 1, 200),
+            ("?fuzzy=True&song_name=Ciao", "Bella Ciao", 1, 200),
+            ("?fuzzy=False&song_name=Ciao", None, 0, 204),
+            ("?song_name=Ciao", None, 0, 204),
+            ("?year=1970&username=Dr. Q", "Sixty Years On", 1, 200),
+        ],
+    )
+    def test_get_entries_with_multiple_params(
+        self, args, expected_song_name, expected_len, expected_status_code
+    ):
+        """
+        Tests get-entries/ with multiple search params. Test for expected quantity
+        """
+        url = f"{TEST_FLASK_URL}/get-entries/{args}"
+        r = requests.get(url)
 
-    def test_get_entries_with_multiple_param_year(self):
-        """test get-entries/ with year and username params"""
-        pass
+        assert r.status_code == expected_status_code
+        if expected_status_code == 200:
+            payload = r.json()
+            assert payload[0]["song_name"] == expected_song_name
+            assert len(payload) == expected_len
