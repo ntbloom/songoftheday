@@ -1,7 +1,7 @@
 from src.postgres.postgres_connector import PostgresConnector
 from argon2 import argon2_hash
 from secrets import token_urlsafe
-from src import SALT_LENGTH
+from src import SALT_LENGTH, MIN_PW_LENGTH
 
 
 class PasswordManager(PostgresConnector):
@@ -64,3 +64,12 @@ class PasswordManager(PostgresConnector):
         if administrator:
             return 1
         return 0
+
+    def validate_password(self, password: str) -> None:
+        """
+        Raises ValueError exception for insecure passwords
+        """
+        if len(password) < MIN_PW_LENGTH:
+            raise ValueError("password is too short")
+        # TODO: add 1000 most common passwords and do lookup against them in postgresql
+        return

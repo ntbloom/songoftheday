@@ -14,6 +14,13 @@ CREATE TABLE users (
     UNIQUE(salt)
 );
 
+DROP TABLE IF EXISTS prohibited_passwords;
+CREATE TABLE prohibited_passwords (
+    password TEXT
+);
+DROP INDEX IF EXISTS prohib_idx;
+CREATE INDEX prohib_idx ON prohibited_passwords USING HASH (password);
+
 
 DROP TABLE IF EXISTS entries;
 CREATE TABLE entries (

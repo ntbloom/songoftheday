@@ -46,3 +46,9 @@ class TestPasswordManager:
         with pytest.raises(PermissionError):
             password_manager.authenticate(username, old_pw)
         assert password_manager.authenticate(username, new_pw) > -1
+
+    @pytest.mark.parametrize("password", ["12345"])
+    def test_validate_password_fails(self, password_manager, password):
+        """tests that all prohibited passwords are not allowed"""
+        with pytest.raises(ValueError):
+            password_manager.validate_password(password)

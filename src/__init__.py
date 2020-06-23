@@ -32,3 +32,4 @@ SCHEMA: Path = SOURCEDIR.joinpath("postgres").joinpath(Path("schema.sql"))
 
 # authentication variables
 SALT_LENGTH: int = 8
+MIN_PW_LENGTH: int = 10
