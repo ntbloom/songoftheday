@@ -79,7 +79,7 @@ def entry_wrapper():
 def sample_entry():
     """disposable Entry object"""
     day = date(1999, 12, 31)
-    username = "Noah"
+    username = "N Bomb"
     artist = "Prince"
     song_name = "1999"
     year = 1982

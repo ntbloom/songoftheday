@@ -6,6 +6,12 @@ import subprocess
 
 @pytest.mark.usefixtures("flask_dev_server", "load_data_once")
 class TestApp:
+    """
+    Test API endpoints.  Tests here largely rely on sample data not changing
+    tremendously, so if tests start failing, consider that the parametrized queries may
+    no longer be valid.
+    """
+
     def test_hello_world(self):
         """tests connection to database"""
         url = f"{TEST_FLASK_URL}/hello/"
@@ -29,10 +35,14 @@ class TestApp:
         assert expected_length == len(payload) + 1
 
     def test_get_entries_with_single_param_year(self):
-        """tests get_entries() with year search params"""
+        """tests get-entries/ with year search params"""
         url = f"{TEST_FLASK_URL}/get-entries/?year=1906"
         r = requests.get(url)
         assert r.status_code == 200
 
         payload = r.json()
         assert payload[0]["song_name"] == "Bella Ciao"
+
+    def test_get_entries_with_multiple_param_year(self):
+        """test get-entries/ with year and username params"""
+        pass

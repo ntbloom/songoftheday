@@ -31,7 +31,7 @@ class TestEntryWrapper:
         entry: Entry = sample_entry
         entry_id = entry_wrapper.add_entry_to_database(entry)
         artist = "Prince & The Revolution"
-        updated_by = "Noah"
+        updated_by = "N Bomb"
         entry_wrapper.update_entry(updated_by, entry_id, artist=artist)
 
         new_entry = entry_wrapper.get_entry_from_database(entry_id)
@@ -46,20 +46,22 @@ class TestEntryWrapper:
         entry_id = entry_wrapper.add_entry_to_database(entry)
         with pytest.raises(psycopg2.errors.UndefinedColumn):
             entry_wrapper.update_entry(
-                "Noah", entry_id, injection="year=2000; DROP TABLE entries;"
+                "N Bomb", entry_id, injection="year=2000; DROP TABLE entries;"
             )
 
     def test_update_entry_is_safe_general_injection(self, entry_wrapper, sample_entry):
         """tests against SQL injection"""
         entry: Entry = sample_entry
         entry_id = entry_wrapper.add_entry_to_database(entry)
-        entry_wrapper.update_entry("Noah", entry_id, artist="new; DROP TABLE entries;")
+        entry_wrapper.update_entry(
+            "N Bomb", entry_id, artist="new; DROP TABLE entries;"
+        )
         assert entry_wrapper.get_entry_from_database(entry_id) is not None
 
     def test_update_entry_returns_none_on_bad_entry_id(self, entry_wrapper):
         """tests that None is returned when entry_id doesn't make a match"""
         assert (
-            entry_wrapper.update_entry("Noah", 9999999, artist="Someone Else") is None
+            entry_wrapper.update_entry("N Bomb", 9999999, artist="Someone Else") is None
         )
 
     def test_get_all_entries_no_params(self, entry_wrapper):
@@ -70,9 +72,9 @@ class TestEntryWrapper:
 
     def test_get_all_entries_username_param(self, entry_wrapper):
         """tests that you can search by a username"""
-        username = "Noah"
-        entries_by_noah = entry_wrapper.get_all_entries(username=username)
-        for entry in entries_by_noah:
+        username = "N Bomb"
+        entries_by_n_bomb = entry_wrapper.get_all_entries(username=username)
+        for entry in entries_by_n_bomb:
             assert entry.username == username
 
     def test_get_all_entries_returns_none_on_bad_query(self, entry_wrapper):
@@ -81,12 +83,12 @@ class TestEntryWrapper:
 
     def test_get_all_entries_two_params(self, entry_wrapper):
         """tests that more than 1 param can be used"""
-        username = "Noah"
+        username = "N Bomb"
         year = 1972
-        entries_by_noah_in_1972 = entry_wrapper.get_all_entries(
+        entries_by_n_bomb_in_1972 = entry_wrapper.get_all_entries(
             username=username, year=year
         )
-        for entry in entries_by_noah_in_1972:
+        for entry in entries_by_n_bomb_in_1972:
             assert entry.username == username
             assert entry.year == year
 

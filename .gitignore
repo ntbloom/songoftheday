@@ -11,4 +11,3 @@ venv/
 screenshots/
 *.csv#
 .coverage
-*.csv
