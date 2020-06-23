@@ -1,6 +1,5 @@
 from src.postgres.postgres_connector import PostgresConnector
-from typing import Tuple
-from secrets import token_urlsafe
+from argon2 import argon2_hash
 
 
 class PasswordManager(PostgresConnector):
@@ -8,10 +7,8 @@ class PasswordManager(PostgresConnector):
         super().__init__(database, host)
 
     @staticmethod
-    def hash(pw: str, salt: str):
-        new_pw = pw.join(salt)
-        # TODO: implement me
-        return new_pw
+    def hash(pw: str, salt: str) -> str:
+        return argon2_hash(pw, salt)
 
     def create_new_password(self, username: str, old_pw: str, new_pw: str) -> None:
         """

@@ -26,4 +26,4 @@ def get_plaintext_password(username: str) -> str:
         reader = csv.reader(users, delimiter=",")
         for line in reader:
             if line[0] == username:
-                return line[5]
+                return line[4]

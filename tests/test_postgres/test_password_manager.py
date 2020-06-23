@@ -4,7 +4,6 @@ from tests.utils.helper_methods import get_plaintext_password, get_username_data
 
 @pytest.mark.usefixtures("data_populator")
 class TestPasswordManager:
-    @pytest.mark.skip("not implemented yet")
     def test_passwords_get_hashed(self):
         """tests that password stored in database is hashed"""
         username = "N Bomb"
@@ -12,7 +11,7 @@ class TestPasswordManager:
         salt = get_username_data(username, "salt")
         encrypted_password = get_username_data(username, "password")
 
-        assert raw_password.join(salt) != encrypted_password
+        assert raw_password + salt != encrypted_password
 
     @pytest.mark.skip("not implemented yet")
     def test_authenticate_working(self, password_manager):
