@@ -16,6 +16,7 @@ from src import (
 from src.postgres.postgres_connector import PostgresConnector
 from src.datastore.data_populator import DataPopulator
 from src.datastore.entry_wrapper import EntryWrapper, Entry
+from src.postgres.password_manager import PasswordManager
 from datetime import date
 import requests
 import subprocess
@@ -106,3 +107,11 @@ def flask_dev_server():
     yield
     kill = subprocess.run(["kill", "-9", str(pid)])
     kill.check_returncode()
+
+
+@pytest.fixture()
+def password_manager():
+    """disposable password manager object"""
+    pw_mgr = PasswordManager(TEST_DATABASE, HOST)
+    yield pw_mgr
+    pw_mgr.close()

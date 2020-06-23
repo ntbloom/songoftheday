@@ -1,6 +1,10 @@
 from pathlib import Path
 from os.path import abspath
 
+"""
+This file contains various global variables used as configs, mostly for testing.
+"""
+
 # file directories
 HOMEDIR: Path = Path(__file__).parent.parent
 SOURCEDIR: Path = HOMEDIR.joinpath("src")
@@ -25,3 +29,6 @@ HOST: str = "localhost"
 
 # database files
 SCHEMA: Path = SOURCEDIR.joinpath("postgres").joinpath(Path("schema.sql"))
+
+# authentication variables
+SALT_LENGTH: int = 16

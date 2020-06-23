@@ -38,7 +38,7 @@ class TestEntryWrapper:
         assert new_entry.artist == artist
         assert new_entry.song_name == entry.song_name
         assert new_entry.updated_by == updated_by
-        assert datetime.datetime.now().second - new_entry.updated_at.second < 1
+        assert datetime.datetime.now().second - new_entry.updated_at.second < 2
 
     def test_update_entry_is_safe_bad_column(self, entry_wrapper, sample_entry):
         """tests that only valid column names can be used"""

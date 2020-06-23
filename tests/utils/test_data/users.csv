@@ -1,8 +1,8 @@
-username,has_administrator_access,email,day,salt,password
-Flavor Blue,True,flavorblue@blah.com,Saturday,flavorbluesalt,flavorbluepw
-S,True,ess@blah.com,Sunday,ssalt,spw
-Dr. Q,False,drq@blah.com,Monday,drqsalt,drqpw
-Grizz,False,moby@blah.com,Tuesday,grizzsalt,grizzpw
-Benji,True,benji@blah.com,Wednesday,benjisalt,benjipw
-Jules,False,jules@blah.com,Thursday,julessalt,julespw
-N Bomb,True,blizz@blah.com,Friday,nbombsalt,nbombpw
+username,has_administrator_access,email,day,password
+Flavor Blue,True,flavorblue@blah.com,Saturday,flavorbluepw
+S,True,ess@blah.com,Sunday,spw
+Dr. Q,False,drq@blah.com,Monday,drqpw
+Grizz,False,moby@blah.com,Tuesday,grizzpw
+Benji,True,benji@blah.com,Wednesday,benjipw
+Jules,False,jules@blah.com,Thursday,julespw
+N Bomb,True,blizz@blah.com,Friday,nbombpw

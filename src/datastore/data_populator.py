@@ -2,7 +2,9 @@ from src.postgres.postgres_connector import PostgresConnector
 from pathlib import Path
 import psycopg2
 import csv
-from src import HOST, TEST_DATABASE, SCHEMA, DATADIR
+from src import HOST, TEST_DATABASE, SCHEMA, DATADIR, SALT_LENGTH
+from secrets import token_urlsafe
+from src.postgres.password_manager import PasswordManager
 
 
 class DataPopulator(PostgresConnector):
@@ -40,6 +42,8 @@ class DataPopulator(PostgresConnector):
             reader = csv.reader(users, delimiter=",")
             reader.__next__()
             for line in reader:
+                salt = token_urlsafe(SALT_LENGTH)
+                encrypted_pw = PasswordManager.hash(line[4], salt)
                 self.cursor.execute(
                     """
                     INSERT INTO users (
@@ -47,11 +51,11 @@ class DataPopulator(PostgresConnector):
                         has_administrator_access, 
                         email, 
                         day_of_week,
-                        salt,
-                        password
+                        password, 
+                        salt
                     ) VALUES (%s, %s, %s, %s, %s, %s)
                 """,
-                    (line[0], line[1], line[2], line[3], line[4], line[5]),
+                    (line[0], line[1], line[2], line[3], encrypted_pw, salt),
                 )
                 self.commit()
 

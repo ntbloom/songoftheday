@@ -6,12 +6,12 @@ CREATE TABLE users (
     has_administrator_access BOOLEAN NOT NULL, --allowed to edit entries
     email TEXT NOT NULL,
     day_of_week TEXT NOT NULL,
-    salt TEXT NOT NULL,
     password TEXT NOT NULL,
+    salt TEXT NOT NULL,
     UNIQUE(username),
     UNIQUE(day_of_week),
-    UNIQUE(salt),
-    UNIQUE(password)
+    UNIQUE(password),
+    UNIQUE(salt)
 );
 
 
