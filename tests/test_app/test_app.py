@@ -2,7 +2,6 @@ import pytest
 from src import TEST_FLASK_URL, DATADIR
 import requests
 import subprocess
-from os.path import abspath
 
 
 @pytest.mark.usefixtures("flask_dev_server", "load_data_once")
@@ -14,9 +13,9 @@ class TestApp:
         assert r.status_code == 200
         assert r.text == "Hello, world"
 
-    def test_get_all_entries(self):
-        """tests get_all_entries() method"""
-        url = f"{TEST_FLASK_URL}/get-all-entries/"
+    def test_get_entries_no_params(self):
+        """tests get_entries() method with no params"""
+        url = f"{TEST_FLASK_URL}/get-entries/"
         r = requests.get(url)
         assert r.status_code == 200
 
@@ -28,3 +27,12 @@ class TestApp:
             )
         )
         assert expected_length == len(payload) + 1
+
+    def test_get_entries_with_single_param_year(self):
+        """tests get_entries() with year search params"""
+        url = f"{TEST_FLASK_URL}/get-entries/?year=1906"
+        r = requests.get(url)
+        assert r.status_code == 200
+
+        payload = r.json()
+        assert payload[0]["song_name"] == "Bella Ciao"

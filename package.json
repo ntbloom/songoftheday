@@ -1,7 +1,8 @@
 {
   "scripts": {
     "mypy": "venv/bin/mypy --config-file mypy.ini src/",
-    "pytest": "venv/bin/python -m pytest -s"
+    "pytest": "venv/bin/python -m pytest -s",
+    "flask-dev": "venv/bin/python app.py"
   },
   "devDependencies": {
     "prettier": "^2.0.5"

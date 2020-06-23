@@ -29,13 +29,13 @@ def hello_world():
     return "Hello, world"
 
 
-@app.route("/get-all-entries/", methods=["GET"])
+@app.route("/get-entries/", methods=["GET"])
 def get_entries():
     """
     Query the API using database columns as params. Return data as JSON
     """
     entry_wrapper = EntryWrapper(postgres.database, postgres.host)
-    entries = entry_wrapper.get_all_entries()
+    entries = entry_wrapper.get_all_entries(**request.args)
     results = []
     for entry in entries:
         results.append(
@@ -54,14 +54,6 @@ def get_entries():
             }
         )
     return jsonify(results)
-
-
-@app.route("/get-entries/", methods=["GET"])
-def get_all_entries():
-    """
-    Get a JSON blob of all entries in the database
-    """
-    pass
 
 
 @app.errorhandler(500)
