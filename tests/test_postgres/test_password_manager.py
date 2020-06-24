@@ -48,8 +48,16 @@ class TestPasswordManager:
         assert password_manager.authenticate(username, new_pw) > -1
 
     @pytest.mark.usefixtures("add_common_passwords")
-    @pytest.mark.parametrize("password", ["12345"])
+    @pytest.mark.parametrize(
+        "password", ["12345", "manchester", "this is a long and secure sentence"]
+    )
     def test_validate_password_fails(self, password_manager, password):
         """tests that all prohibited passwords are not allowed"""
         with pytest.raises(ValueError):
             password_manager.validate_password(password)
+
+    @pytest.mark.usefixtures("add_common_passwords")
+    def test_validate_password_works(self, password_manager):
+        """tests that a long, strong password can be used"""
+        password = "184590fhjklasdfUIFSJh"
+        password_manager.validate_password(password)

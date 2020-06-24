@@ -121,7 +121,7 @@ def password_manager():
 
 
 @pytest.fixture()
-def add_common_passwords():
+def add_common_passwords(data_populator):
     """adds txt file of common passwords to database"""
     psql = PsqlWrapper(HOST, TEST_DATABASE)
     query = (

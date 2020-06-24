@@ -17,9 +17,10 @@ class PasswordManager(PostgresConnector):
 
     def change_password(self, username: str, old_pw: str, new_pw: str) -> None:
         """
-        Changes the user's password if authentication passes
+        Changes the user's password if authentication passes and new password is legal
         """
         self.authenticate(username, old_pw)
+        self.validate_password(new_pw)
 
         salt = token_urlsafe(SALT_LENGTH)
         new_hash = PasswordManager.hash(new_pw, salt)
@@ -65,11 +66,26 @@ class PasswordManager(PostgresConnector):
             return 1
         return 0
 
+    def _is_weak(self, pw: str) -> bool:
+        """returns True if pw in common_passwords table"""
+        self.cursor.execute(
+            """
+            SELECT password 
+            FROM common_passwords
+            WHERE password = %s
+            """,
+            (pw,),
+        )
+        result = self.cursor.fetchone()
+        return result is not None
+
     def validate_password(self, password: str) -> None:
         """
         Raises ValueError exception for insecure passwords
         """
         if len(password) < MIN_PW_LENGTH:
             raise ValueError("password is too short")
-        # TODO: add 1000 most common passwords and do lookup against them in postgresql
-        return
+        if self._is_weak(password) is True:
+            raise ValueError("password is too common")
+        if " " in password:
+            raise ValueError("no spaces alllowed")
