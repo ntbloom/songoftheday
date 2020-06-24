@@ -10,6 +10,7 @@ class TestPsqlWrapper:
         psql is able to make raw sql query correctly
         """
         psql_wrapper = PsqlWrapper("localhost", TEST_DATABASE)
+        psql_wrapper.create_database()
         query = "SELECT 1+1;"
         result = psql_wrapper.execute_query(query).strip()
         assert result == b"2"

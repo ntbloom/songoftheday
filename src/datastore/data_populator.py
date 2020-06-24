@@ -31,6 +31,7 @@ class DataPopulator(PostgresConnector):
             for i in sql:
                 try:
                     self.cursor.execute(i)
+                    self.commit()
                 except psycopg2.ProgrammingError:
                     pass
 

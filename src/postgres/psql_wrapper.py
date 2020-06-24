@@ -12,7 +12,6 @@ class PsqlWrapper:
     def __init__(self, host: str, database: str):
         self.host = host  # -h flag with psql
         self.db = database  # -d flag with psql
-        self._create_database()
 
     def execute_query(self, query: str, no_database: Optional[bool] = False) -> bytes:
         """executes a raw SQL query, returns the results as a string"""
@@ -45,7 +44,7 @@ class PsqlWrapper:
         command.check_returncode()
         return command.stdout
 
-    def _create_database(self) -> bytes:
+    def create_database(self) -> bytes:
         """creates a new database, drops the old one if it exists"""
         drop = f"DROP DATABASE IF EXISTS {self.db};"
         self.execute_query(drop, no_database=True)

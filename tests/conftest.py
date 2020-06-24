@@ -12,6 +12,7 @@ from src import (
     PYTHON,
     APP,
     TEST_FLASK_URL,
+    COMMON_PASSWORDS,
 )
 from src.postgres.postgres_connector import PostgresConnector
 from src.datastore.data_populator import DataPopulator
@@ -43,6 +44,7 @@ def pg_connector():
 def data_populator():
     """automatically populate data in the database"""
     psql = PsqlWrapper(HOST, TEST_DATABASE)  # initialize the database
+    psql.create_database()
     dp = DataPopulator(
         TEST_DATABASE,
         HOST,
@@ -54,10 +56,11 @@ def data_populator():
     dp.close()
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="session")
 def load_data_once():
     """populate data in the database once per class"""
-    psql = PsqlWrapper(HOST, TEST_DATABASE)  # initialize the database
+    psql = PsqlWrapper(HOST, TEST_DATABASE)
+    psql.create_database()
     dp = DataPopulator(
         TEST_DATABASE,
         HOST,
@@ -115,3 +118,15 @@ def password_manager():
     pw_mgr = PasswordManager(TEST_DATABASE, HOST)
     yield pw_mgr
     pw_mgr.close()
+
+
+@pytest.fixture()
+def add_common_passwords():
+    """adds txt file of common passwords to database"""
+    psql = PsqlWrapper(HOST, TEST_DATABASE)
+    query = (
+        "\COPY common_passwords (password) FROM '"
+        + str(COMMON_PASSWORDS)
+        + "' (FORMAT csv);"
+    )
+    psql.execute_query(query)
