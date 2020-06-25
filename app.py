@@ -1,5 +1,5 @@
 from flask import Flask, request, make_response, jsonify
-from src import TEST_FLASK_PORT
+from src import TEST_FLASK_PORT, TEST_JWT_KEY, HOMEDIR
 from src.datastore.entry_wrapper import EntryWrapper
 from typing import NamedTuple
 from tests.conftest import TEST_DATABASE, HOST
@@ -20,6 +20,12 @@ postgres = (
     if app.config["ENV"] == "production"
     else PostgresParams(TEST_DATABASE, HOST)
 )
+
+# configure secrets
+if app.config["ENV"] == "production":
+    pass  # TODO: read from .secrets file
+else:
+    jwt_key = TEST_JWT_KEY
 
 
 @app.route("/v1.0/hello/", methods=["GET"])

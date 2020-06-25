@@ -19,7 +19,7 @@ class PasswordManager(PostgresConnector):
         """
         Changes the user's password if authentication passes and new password is legal
         """
-        self.authenticate(username, old_pw)
+        self.authenticate_with_password(username, old_pw)
         self.validate_password(new_pw)
 
         salt = token_urlsafe(SALT_LENGTH)
@@ -36,7 +36,7 @@ class PasswordManager(PostgresConnector):
         )
         self.commit()
 
-    def authenticate(self, username: str, plaintext_password: str) -> int:
+    def authenticate_with_password(self, username: str, plaintext_password: str) -> int:
         """
         Attempts to authenticate user, returns authority level.
         if auth fails: -> raise PermissionError

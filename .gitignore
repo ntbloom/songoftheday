@@ -11,3 +11,4 @@ venv/
 screenshots/
 *.csv#
 .coverage
+.secrets.json

@@ -13,11 +13,13 @@ from src import (
     APP,
     TEST_FLASK_URL,
     COMMON_PASSWORDS,
+    TEST_JWT_KEY,
 )
 from src.postgres.postgres_connector import PostgresConnector
 from src.datastore.data_populator import DataPopulator
 from src.datastore.entry_wrapper import EntryWrapper, Entry
 from src.postgres.password_manager import PasswordManager
+from src.datastore.jwt_manager import JWTManager
 from datetime import date
 import requests
 import subprocess
@@ -130,3 +132,9 @@ def add_common_passwords(data_populator):
         + "' (FORMAT csv);"
     )
     psql.execute_query(query)
+
+
+@pytest.fixture()
+def jwt_manager():
+    jwt = JWTManager(TEST_JWT_KEY)
+    return jwt
