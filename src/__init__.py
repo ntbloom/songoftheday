@@ -18,6 +18,7 @@ TEST_FLASK_PORT: int = 5000
 FLASK_API_VERSION: str = "1.0"
 TEST_FLASK_URL: str = f"http://127.0.0.1:{str(TEST_FLASK_PORT)}/v{FLASK_API_VERSION}"
 TEST_JWT_KEY: str = "this_is_a_bad_key"
+TEST_JWT_ALGO: str = "HS512"
 
 # Python environment variables for running Flask dev server from subprocess module
 APP = abspath(HOMEDIR.joinpath("app.py"))
