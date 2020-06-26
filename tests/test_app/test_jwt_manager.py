@@ -3,6 +3,8 @@ from freezegun import freeze_time
 from time import time, gmtime
 from src import TEST_JWT_KEY, JWT_DAYS_VALID
 from src.datastore.jwt_manager import JWTManager, JWTError, Token
+from hypothesis import given
+import hypothesis.strategies as st
 
 
 class TestJWTManager:
@@ -25,8 +27,9 @@ class TestJWTManager:
         # TODO: fix so this test will pass on or near Dec 31
         assert expires - today == JWT_DAYS_VALID
 
-    def test_encrypt_and_decrypt(self, jwt_manager):
-        token = Token("Name", 1)
+    @given(name=st.text())
+    def test_encrypt_and_decrypt(self, jwt_manager, name):
+        token = Token(name, 1)
         encrypted = jwt_manager.encrypt(token)
         decrypted = jwt_manager.decrypt(encrypted)
         assert decrypted == token
