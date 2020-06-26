@@ -1,11 +1,11 @@
 import pytest
 from freezegun import freeze_time
-from time import time, gmtime
+from time import time, localtime
+import datetime
 from src import TEST_JWT_KEY, JWT_DAYS_VALID, TEST_JWT_ALGO
 from src.datastore.jwt_manager import JWTManager, JWTError, Token
 from hypothesis import given
 import hypothesis.strategies as st
-import json
 import jwt
 
 
@@ -24,8 +24,8 @@ class TestJWTManager:
         assert raw.lev == level
         now = time()
         assert raw.iat - now < 2
-        expires = gmtime(raw.exp)[7]
-        today = gmtime(now)[7]
+        expires = localtime(raw.exp)[7]
+        today = localtime(now)[7]
 
         # TODO: fix so this test will pass on or near Dec 31
         assert expires - today == JWT_DAYS_VALID
@@ -113,3 +113,22 @@ class TestJWTManager:
 
         with pytest.raises(JWTError):
             jwt_manager.validate(encrypted)
+
+    @pytest.mark.skip("fighting freezegun; look for other options")
+    def test_validate_fails_if_expired(self, jwt_manager):
+        """
+        Fail jwt validation for an expired exp field
+        """
+        token = Token("Name", 1)
+        encrypted = jwt_manager.encrypt(token)
+
+        # without freeze time
+        decrypted = jwt_manager.validate(encrypted)
+
+        # with freeze time
+        future = datetime.datetime.now() + datetime.timedelta(days=JWT_DAYS_VALID + 1)
+        with freeze_time(future):
+            exp = localtime(token.exp)
+            now = localtime(time())
+            with pytest.raises(JWTError):
+                decrypted = jwt_manager.validate(encrypted)

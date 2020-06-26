@@ -51,6 +51,13 @@ class JWTManager:
         """
         token = self.decrypt(encrypted)
         now = time()
+
+        # reject if issued at is in the future
         if token.iat > now:
             raise JWTError()
+
+        # reject if token is expired
+        if token.exp < now:
+            raise JWTError()
+
         return token
