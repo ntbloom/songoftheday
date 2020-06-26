@@ -4,6 +4,12 @@ from secrets import token_urlsafe
 from src import SALT_LENGTH, MIN_PW_LENGTH
 
 
+class PasswordError(Exception):
+    def __init__(self):
+        self.message = "Invalid Password"
+        super().__init__(self.message)
+
+
 class PasswordManager(PostgresConnector):
     def __init__(self, database: str, host: str):
         super().__init__(database, host)
@@ -39,7 +45,7 @@ class PasswordManager(PostgresConnector):
     def authenticate_with_password(self, username: str, plaintext_password: str) -> int:
         """
         Attempts to authenticate user, returns authority level.
-        if auth fails: -> raise PermissionError
+        if auth fails: -> raise PasswordError
         if auth passes:
             if has_administrator_access: -> 1
             if not has_administrator_access: -> 0
@@ -61,7 +67,7 @@ class PasswordManager(PostgresConnector):
         administrator = results[2] == "True"
         hashed = PasswordManager.hash(plaintext_password, salt)
         if encrypted_password != hashed:
-            raise PermissionError("invalid password")
+            raise PasswordError
         if administrator:
             return 1
         return 0

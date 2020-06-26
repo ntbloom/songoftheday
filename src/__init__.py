@@ -35,3 +35,4 @@ SCHEMA: Path = SOURCEDIR.joinpath("postgres").joinpath(Path("schema.sql"))
 SALT_LENGTH: int = 8
 MIN_PW_LENGTH: int = 10
 COMMON_PASSWORDS: Path = SOURCEDIR.joinpath("postgres").joinpath("common_passwords.txt")
+JWT_DAYS_VALID: int = 1

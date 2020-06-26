@@ -1,5 +1,6 @@
 import pytest
 from tests.utils.helper_methods import get_plaintext_password, get_username_data
+from src.postgres.password_manager import PasswordError
 
 
 @pytest.mark.usefixtures("data_populator")
@@ -23,7 +24,7 @@ class TestPasswordManager:
         """tests that a bad password is rejected"""
         username = "N Bomb"
         pw = get_plaintext_password(username) + " "
-        with pytest.raises(PermissionError):
+        with pytest.raises(PasswordError):
             password_manager.authenticate_with_password(username, pw)
 
     def test_change_password_bad_initial_password(self, password_manager):
@@ -31,7 +32,7 @@ class TestPasswordManager:
         username = "N Bomb"
         old_pass = "this is wrong"
         new_pass = "password1234"
-        with pytest.raises(PermissionError):
+        with pytest.raises(PasswordError):
             password_manager.change_password(username, old_pass, new_pass)
 
     def test_change_password_good_password(self, password_manager):
@@ -43,7 +44,7 @@ class TestPasswordManager:
         new_pw = "password1234"
         password_manager.change_password(username, old_pw, new_pw)
 
-        with pytest.raises(PermissionError):
+        with pytest.raises(PasswordError):
             password_manager.authenticate_with_password(username, old_pw)
         assert password_manager.authenticate_with_password(username, new_pw) > -1
 

@@ -1,24 +1,34 @@
 import jwt
 from typing import NamedTuple
-from datetime import datetime
+from time import time
+from src import JWT_DAYS_VALID
+
+
+class JWTError(Exception):
+    def __init__(self):
+        self.message = "Invalid JSON Web Token"
+        super().__init__(self.message)
 
 
 class Token(NamedTuple):
-    iat: datetime
-    exp: datetime
-    username: str
-    level: int
+    username: str  # matches username in postgres
+    level: int  # 0 = user, 1 = administrator
+    iat: float = time()  # time issued
+    exp: float = iat + (JWT_DAYS_VALID * 86400)
 
 
 class JWTManager:
     def __init__(self, key: str):
         self.key: str = key
 
-    def create_jwt_token(self, username: str) -> Token:
+    def encrypt(self, token: Token) -> Token:
         pass
 
-    def validate_jwt_token(self, token: Token) -> None:
+    def decrypt(self, token: Token) -> Token:
         pass
 
-    def refresh_jwt_token(self, token: Token) -> Token:
+    def validate(self, token: Token) -> None:
+        pass
+
+    def refresh(self, token: Token) -> Token:
         pass
