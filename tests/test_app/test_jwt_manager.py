@@ -18,11 +18,10 @@ class TestJWTManager:
         username = "Name"
         level = 1
         algorithm = TEST_JWT_ALGO
-        raw = Token(username, level, algorithm)
+        raw = Token(username, level)
 
         assert raw.usr == username
         assert raw.lev == level
-        assert raw.alg == algorithm
         now = time()
         assert raw.iat - now < 2
         expires = gmtime(raw.exp)[7]
@@ -36,7 +35,7 @@ class TestJWTManager:
         """
         Property-based test on encrypt/decrypt
         """
-        token = Token(name, 1, TEST_JWT_ALGO)
+        token = Token(name, 1)
         encrypted = jwt_manager.encrypt(token)
         decrypted = jwt_manager.decrypt(encrypted)
         assert decrypted == token
@@ -49,4 +48,16 @@ class TestJWTManager:
         with pytest.raises(JWTError):
             jwt_manager.decrypt(invalid)
 
-    # def test_decrypt_raises_jwterror_with
+    def test_decrypt_raises_jwterror_with_wrong_algorithm(self):
+        """
+        Decoding jwt should raise exception if wrong algorithm was used
+        """
+        alg1 = "HS256"
+        token = Token("Name", 1)
+        jwt1 = JWTManager(TEST_JWT_KEY, alg1)
+        bad_token = jwt1.encrypt(token)
+
+        alg2 = "HS512"
+        jwt2 = JWTManager(TEST_JWT_KEY, alg2)
+        with pytest.raises(JWTError):
+            jwt2.decrypt(bad_token)
