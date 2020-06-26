@@ -103,7 +103,6 @@ class TestJWTManager:
         decrypted = jwt_manager.validate(encrypted)
         assert decrypted == token
 
-    @pytest.mark.skip
     def test_validate_fails_iat_in_the_future(self, jwt_manager):
         """
         Fail jwt validation for an iat in the future
@@ -113,4 +112,4 @@ class TestJWTManager:
         encrypted = jwt_manager.encrypt(token)
 
         with pytest.raises(JWTError):
-            jwt_manager.decrypt(encrypted)
+            jwt_manager.validate(encrypted)

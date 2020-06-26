@@ -21,8 +21,8 @@ TEST_JWT_KEY: str = "this_is_a_bad_key"
 TEST_JWT_ALGO: str = "HS512"
 
 # Python environment variables for running Flask dev server from subprocess module
-APP = abspath(HOMEDIR.joinpath("app.py"))
-PYTHON = abspath(HOMEDIR.joinpath("venv").joinpath("bin").joinpath("python"))
+APP: str = abspath(HOMEDIR.joinpath("app.py"))
+PYTHON: str = abspath(HOMEDIR.joinpath("venv").joinpath("bin").joinpath("python"))
 
 # container images
 POSTGRES: str = "docker.io/library/postgres"

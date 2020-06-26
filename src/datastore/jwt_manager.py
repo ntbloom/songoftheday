@@ -1,7 +1,8 @@
 import jwt
-from typing import NamedTuple, Optional
+from jwt.exceptions import DecodeError, InvalidAlgorithmError
+from typing import NamedTuple
 from time import time
-from src import JWT_DAYS_VALID, TEST_JWT_ALGO
+from src import JWT_DAYS_VALID
 
 
 class JWTError(Exception):
@@ -17,16 +18,16 @@ class JWTError(Exception):
 class Token(NamedTuple):
     usr: str  # matches username in postgres
     lev: int  # level: 0 = user, 1 = administrator
-    iat: Optional[float] = time()  # time issued
-    exp: Optional[float] = iat + (JWT_DAYS_VALID * 86400)  # expiration
+    iat: float = time()  # time issued
+    exp: float = time() + (JWT_DAYS_VALID * 86400)  # expiration
 
 
 class JWTManager:
-    def __init__(self, key: str, algorithm: Optional[str] = "HS512"):
+    def __init__(self, key: str, algorithm: str = "HS512"):
         self.key: str = key
         self.algorithm = algorithm
 
-    def encrypt(self, token: Token) -> str:
+    def encrypt(self, token: Token) -> bytes:
         """
         Encrypt the token and return a string
         """
@@ -39,14 +40,17 @@ class JWTManager:
         try:
             t = jwt.decode(encrypted, self.key, algorithms=self.algorithm)
             return Token(**t)
-        except jwt.exceptions.DecodeError:
+        except DecodeError:
             raise JWTError()
-        except jwt.exceptions.InvalidAlgorithmError:
+        except InvalidAlgorithmError:
             raise JWTError()
 
-    def validate(self, encrypted: Token) -> Token:
+    def validate(self, encrypted: str) -> Token:
         """
         Validate and return decrypted token.  Raises JWTError on invalid token
         """
-        decrypted = self.decrypt(encrypted)
-        return decrypted
+        token = self.decrypt(encrypted)
+        now = time()
+        if token.iat > now:
+            raise JWTError()
+        return token
