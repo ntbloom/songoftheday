@@ -38,12 +38,15 @@ class JWTManager:
         """
         try:
             t = jwt.decode(encrypted, self.key, algorithms=self.algorithm)
-            return Token(t["usr"], t["lev"], t["iat"], t["exp"])
+            return Token(**t)
         except jwt.exceptions.DecodeError:
             raise JWTError()
         except jwt.exceptions.InvalidAlgorithmError:
             raise JWTError()
 
-    def validate(self, token: Token) -> None:
-
-        pass
+    def validate(self, encrypted: Token) -> Token:
+        """
+        Validate and return decrypted token.  Raises JWTError on invalid token
+        """
+        decrypted = self.decrypt(encrypted)
+        return decrypted

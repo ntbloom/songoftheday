@@ -92,3 +92,25 @@ class TestJWTManager:
         bad_token = jwt.encode(payload, TEST_JWT_KEY, TEST_JWT_ALGO)
         with pytest.raises(JWTError):
             jwt_manager.decrypt(payload)
+
+    def test_validate_passes_happy_path(self, jwt_manager):
+        """
+        A valid jwt passes immediately after its creation
+        """
+        token = Token("Name", 1)
+        encrypted = jwt_manager.encrypt(token)
+
+        decrypted = jwt_manager.validate(encrypted)
+        assert decrypted == token
+
+    @pytest.mark.skip
+    def test_validate_fails_iat_in_the_future(self, jwt_manager):
+        """
+        Fail jwt validation for an iat in the future
+        """
+        future = time() + 300
+        token = Token("Name", 1, iat=future)
+        encrypted = jwt_manager.encrypt(token)
+
+        with pytest.raises(JWTError):
+            jwt_manager.decrypt(encrypted)
