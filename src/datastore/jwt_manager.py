@@ -45,4 +45,5 @@ class JWTManager:
             raise JWTError()
 
     def validate(self, token: Token) -> None:
+
         pass

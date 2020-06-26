@@ -61,3 +61,34 @@ class TestJWTManager:
         jwt2 = JWTManager(TEST_JWT_KEY, alg2)
         with pytest.raises(JWTError):
             jwt2.decrypt(bad_token)
+
+    def test_decrypt_raises_jwt_error_with_wrong_key(self):
+        """
+        Throw JWTError when wrong encryption key is given
+        """
+        token = Token("Name", 1)
+        bad_key = "this is a bad key"
+        jwt1 = JWTManager(bad_key)
+        bad_token = jwt1.encrypt(token)
+
+        jwt2 = JWTManager(TEST_JWT_KEY)
+        with pytest.raises(JWTError):
+            jwt2.decrypt(bad_token)
+
+    @pytest.mark.parametrize(
+        "payload",
+        [
+            {"usr": "blah", "lev": 1, "iat": 123.4, "exp": 456.7, "oops": "extra"},
+            {"usr": "blah", "lev": 1, "iat": 123.4},
+        ],
+    )
+    def test_decrypt_raises_jwt_error_when_form_doesnt_match(
+        self, jwt_manager, payload
+    ):
+        """
+        Throws JWTError if token has more or fewer attributes
+        """
+        a = 1
+        bad_token = jwt.encode(payload, TEST_JWT_KEY, TEST_JWT_ALGO)
+        with pytest.raises(JWTError):
+            jwt_manager.decrypt(payload)
