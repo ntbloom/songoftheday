@@ -1,11 +1,11 @@
 from flask import Flask, request, make_response, jsonify
-from src import TEST_FLASK_PORT, TEST_JWT_KEY, JWT_DAYS_VALID
+from src import TEST_FLASK_PORT, TEST_JWT_KEY, TEST_JWT_ALGO
 from src.datastore.entry_wrapper import EntryWrapper
 from typing import NamedTuple
 from tests.conftest import TEST_DATABASE, HOST
 from psycopg2.errors import UndefinedColumn
 from src.postgres.password_manager import PasswordManager, PasswordError
-from src.datastore.jwt_manager import Token, JWTManager
+from src.datastore.jwt_manager import Token, JWTManager, JWTError
 
 app = Flask(__name__)
 
@@ -25,9 +25,12 @@ postgres = (
 
 # configure secrets
 if app.config["ENV"] == "production":
-    pass  # TODO: read from .secrets file
+    # TODO: read from .secrets file
+    jwt_key = ""
+    jwt_algo = ""
 else:
     jwt_key = TEST_JWT_KEY
+    jwt_algo = TEST_JWT_ALGO
 
 
 @app.route("/v1.0/hello/", methods=["GET"])
@@ -83,12 +86,28 @@ def authenticate():
     with PasswordManager(postgres.database, postgres.host) as password_manager:
         try:
             level = password_manager.authenticate_with_password(username, password)
-        except PasswordError:
+        except PasswordError as e:
             return make_response(jsonify({"error": "Authentication Error"}), 403)
         token = Token(username, level)
         jwt_manager = JWTManager(jwt_key)
         encrypted_token = jwt_manager.encrypt(token)
         return encrypted_token
+
+
+@app.route("/v1.0/add-entry/", methods=["POST"])
+def add_entry():
+    """
+    Add an entry to the database
+    """
+    args = request.args.to_dict()
+    auth_error = make_response(jsonify({"error": "Authentication Error"}), 403)
+    jwt_manager = JWTManager(jwt_key, jwt_algo)
+    try:
+        jwt = args["jwt"]
+        decrypted = jwt_manager.validate(jwt)
+    except KeyError:
+        return auth_error
+    return make_response(200)
 
 
 @app.errorhandler(500)

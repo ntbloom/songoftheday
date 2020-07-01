@@ -19,11 +19,12 @@ from src.postgres.postgres_connector import PostgresConnector
 from src.datastore.data_populator import DataPopulator
 from src.datastore.entry_wrapper import EntryWrapper, Entry
 from src.postgres.password_manager import PasswordManager
-from src.datastore.jwt_manager import JWTManager
+from src.datastore.jwt_manager import Token, JWTManager
 from datetime import date
 import requests
 import subprocess
 import os
+from time import time
 
 
 @pytest.fixture(scope="session", autouse=False)
@@ -136,5 +137,38 @@ def add_common_passwords(data_populator):
 
 @pytest.fixture()
 def jwt_manager():
+    """disposable JWTManager object"""
     jwt = JWTManager(TEST_JWT_KEY)
     return jwt
+
+
+@pytest.fixture()
+def valid_jwt(jwt_manager):
+    """a valid json web token"""
+    token = Token("N Bomb", 1)
+    encrypted = jwt_manager.encrypt(token)
+    return encrypted
+
+
+@pytest.fixture()
+def expired_jwt(jwt_manager):
+    """an expired jwt token"""
+    token = Token("N Bomb", 1, iat=time() - 1000, exp=time() - 900)
+    encrypted = jwt_manager.encrypt(token)
+    return encrypted
+
+
+@pytest.fixture()
+def bad_user_jwt(jwt_manager):
+    """a jwt token with a bad username"""
+    token = Token("Not a user", 0)
+    encypted = jwt_manager.encrypt(token)
+    return encypted
+
+
+@pytest.fixture()
+def mismatched_jwt(jwt_manager):
+    """a jwt token where username doesn't match authority level in postgres"""
+    token = Token("Dr. Q", 1)
+    encrypted = jwt_manager.encrypt(token)
+    return encrypted

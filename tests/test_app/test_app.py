@@ -2,6 +2,7 @@ import pytest
 from src import TEST_FLASK_URL, DATADIR
 import requests
 import subprocess
+from src.datastore.entry_wrapper import Entry
 
 
 @pytest.mark.usefixtures("flask_dev_server", "load_data_once")
@@ -99,3 +100,34 @@ class TestApp:
         r = requests.post(url)
 
         assert r.status_code == 403
+
+    def test_add_entry_fails_without_jwt(self):
+        """
+        Get a 403 error on add-entry endpoint without any jwt sent
+        """
+        url = f"{TEST_FLASK_URL}/add-entry/"
+        r = requests.post(url)
+        assert r.status_code == 403
+
+    def test_add_entry_fails_on_bad_user_jwt(self, bad_user_jwt):
+        """
+        Get a 403 error with an invalid JWT, user doesn't exist
+        """
+        url = f"{TEST_FLASK_URL}/add-entry/?jwt={bad_user_jwt}"
+        r = requests.post(url)
+        assert r.status_code == 403
+
+    # TODO: pick up here
+    # def test_add_entry_fails_on_expired_jwt(self, bad_user_jwt):
+    #     """
+    #     Get a 403 error with an invalid JWT, expired jwt
+    #     """
+    #     pass
+    #
+    # def test_add_entry_with_valid_jwt_passes(self, valid_jwt, sample_entry):
+    #     """
+    #     Add-entry works with valid jwt and all fields present
+    #     """
+    #     e: Entry = sample_entry
+    #     payload = e._asdict()
+    #     url = f"{TEST_FLASK_URL}/add-entry/?jwt={valid_jwt}"

@@ -1,8 +1,9 @@
 import jwt
 from jwt.exceptions import DecodeError, InvalidAlgorithmError
-from typing import NamedTuple
+from typing import NamedTuple, Callable
 from time import time
 from src import JWT_DAYS_VALID
+import functools
 
 
 class JWTError(Exception):
@@ -10,8 +11,8 @@ class JWTError(Exception):
     Generic exception to fail either decryption or validation of jwt
     """
 
-    def __init__(self):
-        self.message = "Invalid JSON Web Token"
+    def __init__(self, reason):
+        self.message = f"Invalid JSON Web Token: {reason}"
         super().__init__(self.message)
 
 
@@ -41,9 +42,9 @@ class JWTManager:
             t = jwt.decode(encrypted, self.key, algorithms=self.algorithm)
             return Token(**t)
         except DecodeError:
-            raise JWTError()
+            raise JWTError("improper decoding")
         except InvalidAlgorithmError:
-            raise JWTError()
+            raise JWTError("invalid algorithm")
 
     def validate(self, encrypted: str) -> Token:
         """
@@ -54,10 +55,10 @@ class JWTManager:
 
         # reject if issued at is in the future
         if token.iat > now:
-            raise JWTError()
+            raise JWTError("issued at is in the future")
 
         # reject if token is expired
         if token.exp < now:
-            raise JWTError()
+            raise JWTError("token is expired")
 
         return token
