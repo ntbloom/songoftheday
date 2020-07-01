@@ -20,12 +20,13 @@ class TestPasswordManager:
         pw = get_plaintext_password(username)
         assert password_manager.authenticate_with_password(username, pw) > -1
 
-    def test_authenticate_works_false(self, password_manager):
+    @pytest.mark.parametrize(
+        "username,password", [("N Bomb", "wrong password"), ("not a user", "nbombpw")]
+    )
+    def test_authenticate_works_false(self, password_manager, username, password):
         """tests that a bad password is rejected"""
-        username = "N Bomb"
-        pw = get_plaintext_password(username) + " "
         with pytest.raises(PasswordError):
-            password_manager.authenticate_with_password(username, pw)
+            password_manager.authenticate_with_password(username, password)
 
     def test_change_password_bad_initial_password(self, password_manager):
         """tests that you get a permission error on a bad old_password"""

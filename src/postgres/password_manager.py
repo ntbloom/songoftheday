@@ -62,6 +62,8 @@ class PasswordManager(PostgresConnector):
             (username,),
         )
         results = self.cursor.fetchone()
+        if results is None:  # username doesn't exist
+            raise PasswordError
         encrypted_password = results[0]
         salt = results[1]
         administrator = results[2] == "True"

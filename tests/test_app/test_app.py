@@ -87,13 +87,14 @@ class TestApp:
         jwt = jwt_manager.validate(token)
         assert jwt.usr == username
 
-    def test_authenticate_fails_on_bad_pw(self):
+    @pytest.mark.parametrize(
+        "username,password",
+        [("S", "oops wrong one"), ("S", "julespw"), ("Not a user", "spw")],
+    )
+    def test_authenticate_fails_on_bad_credentials(self, username, password):
         """
         Get a 403 error on incorrect password
         """
-        username = "S"
-        password = "oops wrong one"
-
         url = f"{TEST_FLASK_URL}/authenticate/?username={username}&password={password}"
         r = requests.post(url)
 
