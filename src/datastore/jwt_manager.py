@@ -41,10 +41,10 @@ class JWTManager:
         try:
             t = jwt.decode(encrypted, self.key, algorithms=self.algorithm)
             return Token(**t)
-        except DecodeError:
-            raise JWTError("improper decoding")
-        except InvalidAlgorithmError:
-            raise JWTError("invalid algorithm")
+        except DecodeError as e:
+            raise JWTError(f"problem decoding: {e}")
+        except InvalidAlgorithmError as e:
+            raise JWTError(f"invalid algorithm: {e}")
 
     def validate(self, encrypted: str) -> Token:
         """

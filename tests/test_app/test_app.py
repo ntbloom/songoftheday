@@ -109,15 +109,22 @@ class TestApp:
         r = requests.post(url)
         assert r.status_code == 403
 
-    def test_add_entry_fails_on_bad_user_jwt(self, bad_user_jwt):
+    def test_add_entry_doesnt_throw_error_with_valid_jwt(self, valid_jwt):
         """
-        Get a 403 error with an invalid JWT, user doesn't exist
+        No problems sending request to add-entry/ endpoint with valid JWT
         """
-        url = f"{TEST_FLASK_URL}/add-entry/?jwt={bad_user_jwt}"
+        url = f"{TEST_FLASK_URL}/add-entry/?jwt={valid_jwt}"
         r = requests.post(url)
-        assert r.status_code == 403
+        assert r.status_code == 200
 
-    # TODO: pick up here
+    # def test_add_entry_fails_on_bad_user_jwt(self, bad_user_jwt):
+    #     """
+    #     Get a 403 error with an invalid JWT, user doesn't exist
+    #     """
+    #     url = f"{TEST_FLASK_URL}/add-entry/?jwt={bad_user_jwt}"
+    #     r = requests.post(url)
+    #     assert r.status_code == 403
+    #
     # def test_add_entry_fails_on_expired_jwt(self, bad_user_jwt):
     #     """
     #     Get a 403 error with an invalid JWT, expired jwt

@@ -2,7 +2,7 @@ import pytest
 from time import time, localtime
 from src import TEST_JWT_KEY, JWT_DAYS_VALID, TEST_JWT_ALGO
 from src.datastore.jwt_manager import JWTManager, JWTError, Token
-from hypothesis import given
+from hypothesis import given, example
 import hypothesis.strategies as st
 import jwt
 
@@ -15,7 +15,6 @@ class TestJWTManager:
         """
         username = "Name"
         level = 1
-        algorithm = TEST_JWT_ALGO
         raw = Token(username, level)
 
         assert raw.usr == username
@@ -29,6 +28,7 @@ class TestJWTManager:
         assert expires - today == JWT_DAYS_VALID
 
     @given(name=st.text())
+    @example(name="Dr. Q")
     def test_encrypt_and_decrypt(self, jwt_manager, name):
         """
         Property-based test on encrypt/decrypt
@@ -121,3 +121,10 @@ class TestJWTManager:
 
         with pytest.raises(JWTError):
             decrypted = jwt_manager.validate(encrypted)
+
+    def test_validate_works_on_conftest_example(self, jwt_manager, valid_jwt):
+        """
+        Helper test to ensure valid_jwt() in conftest can be decrypted/encrypted
+        """
+        decrypted = jwt_manager.validate(valid_jwt)
+        assert decrypted.usr == "N Bomb"
