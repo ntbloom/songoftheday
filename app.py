@@ -1,9 +1,11 @@
 from flask import Flask, request, make_response, jsonify
-from src import TEST_FLASK_PORT, TEST_JWT_KEY, HOMEDIR
+from src import TEST_FLASK_PORT, TEST_JWT_KEY, JWT_DAYS_VALID
 from src.datastore.entry_wrapper import EntryWrapper
 from typing import NamedTuple
 from tests.conftest import TEST_DATABASE, HOST
 from psycopg2.errors import UndefinedColumn
+from src.postgres.password_manager import PasswordManager, PasswordError
+from src.datastore.jwt_manager import Token, JWTManager
 
 app = Flask(__name__)
 
@@ -68,6 +70,25 @@ def get_entries():
             return make_response(jsonify(results), 200)
         except UndefinedColumn:
             return make_response(jsonify({"error": "illegal query params"}), 400)
+
+
+@app.route("/v1.0/authenticate/", methods=["POST"])
+def authenticate():
+    """
+    Validate the password in postgres, return a valid JWT token
+    """
+    args = request.args.to_dict()
+    username = args["username"]
+    password = args["password"]
+    with PasswordManager(postgres.database, postgres.host) as password_manager:
+        try:
+            level = password_manager.authenticate_with_password(username, password)
+        except PasswordError:
+            return make_response(jsonify({"error": "Authentication Error"}), 403)
+        token = Token(username, level)
+        jwt_manager = JWTManager(jwt_key)
+        encrypted_token = jwt_manager.encrypt(token)
+        return encrypted_token
 
 
 @app.errorhandler(500)

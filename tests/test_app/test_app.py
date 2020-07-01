@@ -71,3 +71,30 @@ class TestApp:
             payload = r.json()
             assert payload[0]["song_name"] == expected_song_name
             assert len(payload) == expected_len
+
+    def test_authenticate_works_happy_path(self, jwt_manager):
+        """
+        User is unable to call add-entry/ API without a valid JWT
+        """
+        username = "S"
+        password = "spw"
+
+        url = f"{TEST_FLASK_URL}/authenticate/?username={username}&password={password}"
+        r = requests.post(url)
+
+        assert r.status_code == 200
+        token = r.text
+        jwt = jwt_manager.validate(token)
+        assert jwt.usr == username
+
+    def test_authenticate_fails_on_bad_pw(self):
+        """
+        Get a 403 error on incorrect password
+        """
+        username = "S"
+        password = "oops wrong one"
+
+        url = f"{TEST_FLASK_URL}/authenticate/?username={username}&password={password}"
+        r = requests.post(url)
+
+        assert r.status_code == 403
