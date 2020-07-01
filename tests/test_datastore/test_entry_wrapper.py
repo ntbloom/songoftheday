@@ -12,7 +12,7 @@ class TestEntryWrapper:
         entry_id = entry_wrapper.add_entry_to_database(expected)
         actual = entry_wrapper.get_entry_from_database(entry_id)
         assert actual.day == expected.day
-        assert actual.uname == expected.username
+        assert actual.username == expected.username
         assert actual.artist == expected.artist
         assert actual.song_name == expected.song_name
         assert actual.year == expected.year
@@ -75,7 +75,7 @@ class TestEntryWrapper:
         username = "N Bomb"
         entries_by_n_bomb = entry_wrapper.get_all_entries(username=username)
         for entry in entries_by_n_bomb:
-            assert entry.uname == username
+            assert entry.username == username
 
     def test_get_all_entries_returns_none_on_bad_query(self, entry_wrapper):
         """tests that None is returned when no matches are made"""
@@ -89,7 +89,7 @@ class TestEntryWrapper:
             username=username, year=year
         )
         for entry in entries_by_n_bomb_in_1972:
-            assert entry.uname == username
+            assert entry.username == username
             assert entry.year == year
 
     def test_get_all_entries_artist_perfect_match(self, entry_wrapper, sample_entry):
